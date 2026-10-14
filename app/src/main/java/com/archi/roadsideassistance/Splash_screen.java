@@ -1,4 +1,3 @@
-
 package com.archi.roadsideassistance;
 
 import android.animation.AnimatorSet;
@@ -12,11 +11,10 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.auth.FirebaseAuth;
-
 public class Splash_screen extends AppCompatActivity {
 
-    private final Handler handler = new Handler(Looper.getMainLooper());
+    private final Handler handler =
+            new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,20 +31,30 @@ public class Splash_screen extends AppCompatActivity {
         logo.setScaleY(0.5f);
 
         ObjectAnimator logoFade =
-                ObjectAnimator.ofFloat(logo, "alpha", 0f, 1f);
+                ObjectAnimator.ofFloat(
+                        logo, "alpha", 0f, 1f);
+
         ObjectAnimator logoX =
-                ObjectAnimator.ofFloat(logo, "scaleX", 0.5f, 1f);
+                ObjectAnimator.ofFloat(
+                        logo, "scaleX", 0.5f, 1f);
+
         ObjectAnimator logoY =
-                ObjectAnimator.ofFloat(logo, "scaleY", 0.5f, 1f);
+                ObjectAnimator.ofFloat(
+                        logo, "scaleY", 0.5f, 1f);
 
         AnimatorSet logoAnimation = new AnimatorSet();
-        logoAnimation.playTogether(logoFade, logoX, logoY);
+        logoAnimation.playTogether(
+                logoFade, logoX, logoY);
+
         logoAnimation.setDuration(800);
-        logoAnimation.setInterpolator(new DecelerateInterpolator());
+        logoAnimation.setInterpolator(
+                new DecelerateInterpolator());
+
         logoAnimation.start();
 
         // App name slides upward
         appName.setTranslationY(35f);
+
         appName.animate()
                 .alpha(1f)
                 .translationY(0f)
@@ -61,25 +69,21 @@ public class Splash_screen extends AppCompatActivity {
                 .setDuration(700)
                 .start();
 
-        // Navigate after the splash animation
+        // Navigate to login after splash animation
         handler.postDelayed(() -> {
+
             if (isFinishing() || isDestroyed()) {
                 return;
             }
 
-            FirebaseAuth auth = FirebaseAuth.getInstance();
-            Intent intent;
-
-            if (auth.getCurrentUser() != null) {
-                intent = new Intent(
-                        Splash_screen.this, MainActivity.class);
-            } else {
-                intent = new Intent(
-                        Splash_screen.this, activity_signup.class);
-            }
+            Intent intent = new Intent(
+                    Splash_screen.this,
+                    MainActivity.class
+            );
 
             startActivity(intent);
             finish();
+
         }, 2500);
     }
 
