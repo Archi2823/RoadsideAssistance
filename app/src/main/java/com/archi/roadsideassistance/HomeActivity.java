@@ -1,3 +1,4 @@
+
 package com.archi.roadsideassistance;
 
 import android.content.Intent;
@@ -44,7 +45,7 @@ public class HomeActivity extends AppCompatActivity {
             tvWelcome.setText("Welcome to Road Side Assistance!");
         }
 
-        // Open Profile screen from the top-right icon
+        // Open Profile screen
         btnProfile.setOnClickListener(v -> {
             startActivity(new Intent(
                     HomeActivity.this,
@@ -58,6 +59,18 @@ public class HomeActivity extends AppCompatActivity {
                     HomeActivity.this,
                     ChangePasswordActivity.class
             ));
+        });
+
+        // Request Battery Help
+        Button btnBatteryHelp =
+                findViewById(R.id.btnBatteryHelp);
+
+        btnBatteryHelp.setOnClickListener(v -> {
+            Intent intent = new Intent(
+                    HomeActivity.this,
+                    BatteryHelpActivity.class
+            );
+            startActivity(intent);
         });
 
         // Logout

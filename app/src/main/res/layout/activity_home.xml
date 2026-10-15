@@ -2,6 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#F4F7FB"
     android:fillViewport="true">
 
@@ -28,7 +29,7 @@
                 android:padding="8dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_profile"
-                android:tint="#173B6C" />
+                app:tint="#173B6C" />
 
         </FrameLayout>
 
@@ -65,6 +66,19 @@
             android:textColor="#64748B"
             android:textSize="16sp"
             android:gravity="center" />
+
+
+        <Button
+            android:id="@+id/btnBatteryHelp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="Request Battery Help"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:backgroundTint="#2457C5"
+            android:textColor="#FFFFFF" />
+
 
         <!-- Change Password Button -->
         <Button
