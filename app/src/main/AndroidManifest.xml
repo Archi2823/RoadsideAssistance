@@ -41,6 +41,10 @@
             android:name=".ResetPasswordActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false" />
+
         <!-- Login screen -->
         <activity
             android:name=".MainActivity"

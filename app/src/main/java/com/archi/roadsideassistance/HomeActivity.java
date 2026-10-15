@@ -1,9 +1,9 @@
-
 package com.archi.roadsideassistance;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,8 +24,10 @@ public class HomeActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
 
         TextView tvWelcome = findViewById(R.id.tvWelcome);
-        Button btnChangePassword = findViewById(R.id.btnChangePassword);
+        Button btnChangePassword =
+                findViewById(R.id.btnChangePassword);
         Button btnLogout = findViewById(R.id.btnLogout);
+        ImageButton btnProfile = findViewById(R.id.btnProfile);
 
         FirebaseUser user = auth.getCurrentUser();
 
@@ -42,6 +44,15 @@ public class HomeActivity extends AppCompatActivity {
             tvWelcome.setText("Welcome to Road Side Assistance!");
         }
 
+        // Open Profile screen from the top-right icon
+        btnProfile.setOnClickListener(v -> {
+            startActivity(new Intent(
+                    HomeActivity.this,
+                    ProfileActivity.class
+            ));
+        });
+
+        // Change Password
         btnChangePassword.setOnClickListener(v -> {
             startActivity(new Intent(
                     HomeActivity.this,
@@ -49,6 +60,7 @@ public class HomeActivity extends AppCompatActivity {
             ));
         });
 
+        // Logout
         btnLogout.setOnClickListener(v -> {
             auth.signOut();
 
