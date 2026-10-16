@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F4F7FB"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Service Feedback"
+            android:textColor="#173B6C"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="24dp"
+            android:text="How was your roadside assistance experience?"
+            android:textColor="#64748B"
+            android:textSize="15sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Rate Your Experience"
+            android:textColor="#172B4D"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <RatingBar
+            android:id="@+id/ratingBarFeedback"
+            style="?android:attr/ratingBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            android:numStars="5"
+            android:stepSize="1"
+            android:rating="5" />
+
+        <TextView
+            android:id="@+id/tvRatingLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Excellent"
+            android:textColor="#2457C5"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:text="Comments (Optional)"
+            android:textColor="#172B4D"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/etFeedbackComments"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="130dp"
+            android:layout_marginTop="10dp"
+            android:backgroundTint="#2457C5"
+            android:gravity="top|start"
+            android:hint="Tell us about your experience..."
+            android:inputType="textMultiLine|textCapSentences"
+            android:padding="14dp"
+            android:textColor="#172B4D"
+            android:textColorHint="#8995A8" />
+
+        <TextView
+            android:id="@+id/tvFeedbackMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:textColor="#C62828"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/btnSubmitFeedback"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="#2457C5"
+            android:text="Submit Feedback"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+</ScrollView>
