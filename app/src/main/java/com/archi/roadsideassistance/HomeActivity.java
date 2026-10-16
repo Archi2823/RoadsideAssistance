@@ -1,4 +1,3 @@
-
 package com.archi.roadsideassistance;
 
 import android.content.Intent;
@@ -10,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.archi.roadsideassistance.MainActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -25,24 +25,39 @@ public class HomeActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
 
         TextView tvWelcome = findViewById(R.id.tvWelcome);
+
+        Button btnBatteryHelp =
+                findViewById(R.id.btnBatteryHelp);
+
+        Button btnMyRequests =
+                findViewById(R.id.btnMyRequests);
+
         Button btnChangePassword =
                 findViewById(R.id.btnChangePassword);
-        Button btnLogout = findViewById(R.id.btnLogout);
-        ImageButton btnProfile = findViewById(R.id.btnProfile);
+
+        Button btnLogout =
+                findViewById(R.id.btnLogout);
+
+        ImageButton btnProfile =
+                findViewById(R.id.btnProfile);
 
         FirebaseUser user = auth.getCurrentUser();
 
+        // Check whether the user is logged in
         if (user == null) {
             openLoginScreen();
             return;
         }
 
+        // Display welcome message
         String name = user.getDisplayName();
 
         if (name != null && !name.trim().isEmpty()) {
             tvWelcome.setText("Welcome, " + name + "!");
         } else {
-            tvWelcome.setText("Welcome to Road Side Assistance!");
+            tvWelcome.setText(
+                    "Welcome to Road Side Assistance!"
+            );
         }
 
         // Open Profile screen
@@ -53,24 +68,28 @@ public class HomeActivity extends AppCompatActivity {
             ));
         });
 
-        // Change Password
+        // Open Battery Help form
+        btnBatteryHelp.setOnClickListener(v -> {
+            startActivity(new Intent(
+                    HomeActivity.this,
+                    BatteryHelpActivity.class
+            ));
+        });
+
+        // Open My Requests screen
+        btnMyRequests.setOnClickListener(v -> {
+            startActivity(new Intent(
+                    HomeActivity.this,
+                    MyRequestsActivity.class
+            ));
+        });
+
+        // Open Change Password screen
         btnChangePassword.setOnClickListener(v -> {
             startActivity(new Intent(
                     HomeActivity.this,
                     ChangePasswordActivity.class
             ));
-        });
-
-        // Request Battery Help
-        Button btnBatteryHelp =
-                findViewById(R.id.btnBatteryHelp);
-
-        btnBatteryHelp.setOnClickListener(v -> {
-            Intent intent = new Intent(
-                    HomeActivity.this,
-                    BatteryHelpActivity.class
-            );
-            startActivity(intent);
         });
 
         // Logout

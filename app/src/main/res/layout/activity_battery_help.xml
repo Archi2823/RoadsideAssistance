@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F5F7FB"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:clipToPadding="false">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -11,6 +12,7 @@
         android:orientation="vertical"
         android:padding="24dp">
 
+        <!-- Screen Title -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -28,41 +30,51 @@
             android:textColor="#65748B"
             android:textSize="15sp" />
 
+        <!-- Vehicle Type -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Vehicle Type"
+            android:text="Vehicle Type *"
             android:textColor="#172B4D"
+            android:textSize="15sp"
             android:textStyle="bold" />
 
         <Spinner
             android:id="@+id/spVehicleType"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
+            android:layout_height="56dp"
             android:layout_marginTop="8dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
             android:backgroundTint="#2457C5" />
 
+        <!-- Battery Issue -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="Battery Issue"
+            android:text="Battery Issue *"
             android:textColor="#172B4D"
+            android:textSize="15sp"
             android:textStyle="bold" />
 
         <Spinner
             android:id="@+id/spBatteryIssue"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
+            android:layout_height="56dp"
             android:layout_marginTop="8dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
             android:backgroundTint="#2457C5" />
 
+        <!-- Location -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="Your Location"
+            android:text="Your Location *"
             android:textColor="#172B4D"
+            android:textSize="15sp"
             android:textStyle="bold" />
 
         <EditText
@@ -71,23 +83,38 @@
             android:layout_height="wrap_content"
             android:minHeight="56dp"
             android:layout_marginTop="8dp"
+            android:backgroundTint="#2457C5"
             android:hint="Enter address or nearby landmark"
             android:inputType="textPostalAddress"
             android:padding="14dp"
-            android:backgroundTint="#2457C5" />
+            android:textColor="#172B4D"
+            android:textColorHint="#8995A8" />
+
+        <!-- Additional Description -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Additional Details (Optional)"
+            android:textColor="#172B4D"
+            android:textSize="15sp"
+            android:textStyle="bold" />
 
         <EditText
             android:id="@+id/etBatteryDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="100dp"
-            android:layout_marginTop="16dp"
-            android:gravity="top"
-            android:hint="Additional details (optional)"
+            android:minHeight="110dp"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="#2457C5"
+            android:gravity="top|start"
+            android:hint="Describe your battery problem..."
             android:inputType="textMultiLine|textCapSentences"
             android:padding="14dp"
-            android:backgroundTint="#2457C5" />
+            android:textColor="#172B4D"
+            android:textColorHint="#8995A8" />
 
+        <!-- Validation / Status Message -->
         <TextView
             android:id="@+id/tvBatteryMessage"
             android:layout_width="match_parent"
@@ -96,16 +123,29 @@
             android:textColor="#C62828"
             android:textSize="14sp" />
 
+        <!-- Submit Button -->
         <Button
             android:id="@+id/btnSubmitBatteryRequest"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginTop="20dp"
+            android:layout_marginBottom="12dp"
+            android:backgroundTint="#2457C5"
             android:text="Submit Request"
             android:textAllCaps="false"
+            android:textColor="#FFFFFF"
             android:textSize="16sp"
-            android:backgroundTint="#2457C5"
-            android:textColor="#FFFFFF" />
+            android:textStyle="bold" />
+
+        <!-- Information -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="You can edit or cancel your request before a technician is assigned."
+            android:textColor="#65748B"
+            android:textSize="13sp" />
 
     </LinearLayout>
 </ScrollView>

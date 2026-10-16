@@ -8,7 +8,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.app.AlertDialog;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,7 +18,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 public class BatteryHelpActivity extends AppCompatActivity {
 
@@ -30,13 +28,6 @@ public class BatteryHelpActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
-
-    // Predefined dummy technicians
-    private final String[][] technicians = {
-            {"Rahul Sharma", "9876543210", "4.8"},
-            {"Amit Patel", "9876501234", "4.7"},
-            {"Vijay Kumar", "9876512345", "4.9"}
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +48,11 @@ public class BatteryHelpActivity extends AppCompatActivity {
 
         String[] vehicles = {
                 "Select vehicle type",
-                "Bike", "Car", "SUV", "Truck", "Other"
+                "Bike",
+                "Car",
+                "SUV",
+                "Truck",
+                "Other"
         };
 
         String[] issues = {
@@ -131,37 +126,36 @@ public class BatteryHelpActivity extends AppCompatActivity {
         String description = etBatteryDescription.getText()
                 .toString().trim();
 
-        // Select a predefined dummy technician
-        int index = new Random().nextInt(technicians.length);
-
-        String technicianName = technicians[index][0];
-        String technicianPhone = technicians[index][1];
-        String technicianRating = technicians[index][2];
-
-        // Prepare request document
         Map<String, Object> request = new HashMap<>();
 
         request.put("userId", user.getUid());
-        request.put("userEmail",
-                user.getEmail() == null ? "" : user.getEmail());
+        request.put(
+                "userEmail",
+                user.getEmail() == null ? "" : user.getEmail()
+        );
 
         request.put("serviceType", "Battery Help");
-        request.put("vehicleType",
-                spVehicleType.getSelectedItem().toString());
-        request.put("batteryIssue",
-                spBatteryIssue.getSelectedItem().toString());
+        request.put(
+                "vehicleType",
+                spVehicleType.getSelectedItem().toString()
+        );
+        request.put(
+                "batteryIssue",
+                spBatteryIssue.getSelectedItem().toString()
+        );
 
         request.put("location", location);
         request.put("description", description);
 
-        // Request status
+        // New request is pending and has no assigned technician yet.
         request.put("status", "pending");
+        request.put("technicianAssigned", false);
 
-        // Assigned dummy technician
-        request.put("technicianName", technicianName);
-        request.put("technicianPhone", technicianPhone);
-        request.put("technicianRating", technicianRating);
-        request.put("technicianType", "Dummy Technician");
+        // Empty technician fields until assignment happens.
+        request.put("technicianName", "");
+        request.put("technicianPhone", "");
+        request.put("technicianRating", "");
+        request.put("technicianType", "");
 
         request.put("createdAt", FieldValue.serverTimestamp());
 
@@ -175,13 +169,21 @@ public class BatteryHelpActivity extends AppCompatActivity {
 
                     String requestId = documentReference.getId();
 
-                    // Show assigned technician after successful save
-                    showTechnicianDetails(
-                            requestId,
-                            technicianName,
-                            technicianPhone,
-                            technicianRating
+                    tvBatteryMessage.setText(
+                            "Request submitted successfully!\n"
+                                    + "Request ID: " + requestId
+                                    + "\nStatus: pending"
+                                    + "\nYou can edit or cancel it "
+                                    + "before a technician is assigned."
                     );
+
+                    Toast.makeText(
+                            BatteryHelpActivity.this,
+                            "Battery help request saved!",
+                            Toast.LENGTH_LONG
+                    ).show();
+
+                    finish();
                 })
                 .addOnFailureListener(e -> {
 
@@ -195,26 +197,5 @@ public class BatteryHelpActivity extends AppCompatActivity {
                                     + e.getMessage()
                     );
                 });
-    }
-
-    private void showTechnicianDetails(
-            String requestId,
-            String name,
-            String phone,
-            String rating) {
-
-        new AlertDialog.Builder(this)
-                .setTitle("Technician Assigned!")
-                .setMessage(
-                        "Your battery help request has been saved.\n\n"
-                                + "Request ID: " + requestId + "\n\n"
-                                + "Technician: " + name + "\n"
-                                + "Contact: " + phone + "\n"
-                                + "Rating: " + rating + " / 5\n\n"
-                                + "Request Status: pending"
-                )
-                .setCancelable(false)
-                .setPositiveButton("OK", (dialog, which) -> finish())
-                .show();
     }
 }

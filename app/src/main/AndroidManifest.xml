@@ -49,6 +49,11 @@
             android:name=".BatteryHelpActivity"
             android:exported="false" />
 
+
+        <activity
+            android:name=".MyRequestsActivity"
+            android:exported="false" />
+
         <!-- Login screen -->
         <activity
             android:name=".MainActivity"

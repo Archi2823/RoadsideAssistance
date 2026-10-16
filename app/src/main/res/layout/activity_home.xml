@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#F4F7FB"
     android:fillViewport="true">
 
@@ -13,7 +13,7 @@
         android:gravity="center_horizontal"
         android:padding="24dp">
 
-        <!-- Top Bar: Profile Icon on Right -->
+        <!-- Profile Icon -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -38,11 +38,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
+            android:gravity="center"
             android:text="🚘 Road Side Assistance"
             android:textColor="#173B6C"
             android:textSize="25sp"
-            android:textStyle="bold"
-            android:gravity="center" />
+            android:textStyle="bold" />
 
         <!-- Welcome Message -->
         <TextView
@@ -50,52 +50,72 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
+            android:gravity="center"
             android:text="Welcome!"
             android:textColor="#10243A"
             android:textSize="30sp"
-            android:textStyle="bold"
-            android:gravity="center" />
+            android:textStyle="bold" />
 
         <!-- Login Status -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:layout_marginBottom="32dp"
+            android:layout_marginBottom="24dp"
+            android:gravity="center"
             android:text="You are successfully logged in."
             android:textColor="#64748B"
-            android:textSize="16sp"
-            android:gravity="center" />
+            android:textSize="16sp" />
 
-
+        <!-- Request Battery Help -->
         <Button
             android:id="@+id/btnBatteryHelp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:layout_height="56dp"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="#2457C5"
             android:text="Request Battery Help"
             android:textAllCaps="false"
-            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
+
+        <!-- My Requests -->
+        <Button
+            android:id="@+id/btnMyRequests"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="16dp"
             android:backgroundTint="#2457C5"
-            android:textColor="#FFFFFF" />
+            android:text="My Requests"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
 
-
-        <!-- Change Password Button -->
+        <!-- Change Password -->
         <Button
             android:id="@+id/btnChangePassword"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
+            android:layout_marginTop="16dp"
+            android:backgroundTint="#6750A4"
             android:text="Change Password"
-            android:textAllCaps="false" />
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
 
-        <!-- Logout Button -->
+        <!-- Logout -->
         <Button
             android:id="@+id/btnLogout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_height="56dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="#6750A4"
             android:text="Logout"
-            android:textAllCaps="false" />
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
 
     </LinearLayout>
+
 </ScrollView>
