@@ -96,7 +96,6 @@
             android:textColor="#172B4D"
             android:textSize="15sp"
             android:textStyle="bold" />
-
         <Spinner
             android:id="@+id/spFuelQuantity"
             android:layout_width="match_parent"
