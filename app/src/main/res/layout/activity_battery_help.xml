@@ -16,7 +16,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Request Battery Help"
+            android:text="Request Roadside Assistance"
             android:textColor="#172B4D"
             android:textSize="26sp"
             android:textStyle="bold" />
@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="24dp"
-            android:text="Tell us about your vehicle and battery problem."
+            android:text="Tell us about your vehicle and assistance needs."
             android:textColor="#65748B"
             android:textSize="15sp" />
 
@@ -60,6 +60,45 @@
 
         <Spinner
             android:id="@+id/spBatteryIssue"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="8dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:backgroundTint="#2457C5" />
+
+        <!-- Fuel Type -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Fuel Type *"
+            android:textColor="#172B4D"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/spFuelType"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="8dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:backgroundTint="#2457C5" />
+
+        <!-- Fuel Quantity -->
+        <TextView
+            android:id="@+id/tvFuelQuantityLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Fuel Quantity (litres) *"
+            android:textColor="#172B4D"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/spFuelQuantity"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginTop="8dp"
@@ -108,7 +147,7 @@
             android:layout_marginTop="8dp"
             android:backgroundTint="#2457C5"
             android:gravity="top|start"
-            android:hint="Describe your battery problem..."
+            android:hint="Describe your battery or assistance needs..."
             android:inputType="textMultiLine|textCapSentences"
             android:padding="14dp"
             android:textColor="#172B4D"

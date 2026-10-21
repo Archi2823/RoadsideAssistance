@@ -1,7 +1,7 @@
-
 package com.archi.roadsideassistance;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,12 +22,16 @@ import java.util.Map;
 public class BatteryHelpActivity extends AppCompatActivity {
 
     private Spinner spVehicleType, spBatteryIssue;
+    private Spinner spFuelType, spFuelQuantity;
+
     private EditText etBatteryLocation, etBatteryDescription;
-    private TextView tvBatteryMessage;
+    private TextView tvBatteryMessage, tvFuelQuantityLabel;
     private Button btnSubmitBatteryRequest;
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
+
+    private final String[] quantities = {"2", "5", "10", "15"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,54 +43,110 @@ public class BatteryHelpActivity extends AppCompatActivity {
 
         spVehicleType = findViewById(R.id.spVehicleType);
         spBatteryIssue = findViewById(R.id.spBatteryIssue);
+        spFuelType = findViewById(R.id.spFuelType);
+        spFuelQuantity = findViewById(R.id.spFuelQuantity);
+
         etBatteryLocation = findViewById(R.id.etBatteryLocation);
-        etBatteryDescription =
-                findViewById(R.id.etBatteryDescription);
+        etBatteryDescription = findViewById(R.id.etBatteryDescription);
+
         tvBatteryMessage = findViewById(R.id.tvBatteryMessage);
+        tvFuelQuantityLabel = findViewById(R.id.tvFuelQuantityLabel);
+
         btnSubmitBatteryRequest =
                 findViewById(R.id.btnSubmitBatteryRequest);
 
-        String[] vehicles = {
-                "Select vehicle type",
-                "Bike",
-                "Car",
-                "SUV",
-                "Truck",
-                "Other"
-        };
+        setupSpinner(
+                spVehicleType,
+                new String[]{
+                        "Select vehicle type",
+                        "Bike", "Car", "SUV", "Truck", "Other"
+                }
+        );
 
-        String[] issues = {
-                "Select battery issue",
-                "Battery dead",
-                "Vehicle not starting",
-                "Jump-start required",
-                "Battery replacement required",
-                "Other"
-        };
+        setupSpinner(
+                spBatteryIssue,
+                new String[]{
+                        "Select battery issue",
+                        "Battery dead",
+                        "Vehicle not starting",
+                        "Jump-start required",
+                        "Battery replacement required",
+                        "Other"
+                }
+        );
 
-        ArrayAdapter<String> vehicleAdapter = new ArrayAdapter<>(
-                this,
-                android.R.layout.simple_spinner_item,
-                vehicles
+        setupSpinner(
+                spFuelType,
+                new String[]{
+                        "Select fuel type",
+                        "Petrol",
+                        "Diesel",
+                        "CNG",
+                        "EV Charging"
+                }
         );
-        vehicleAdapter.setDropDownViewResource(
-                android.R.layout.simple_spinner_dropdown_item
-        );
-        spVehicleType.setAdapter(vehicleAdapter);
 
-        ArrayAdapter<String> issueAdapter = new ArrayAdapter<>(
-                this,
-                android.R.layout.simple_spinner_item,
-                issues
+        setupSpinner(
+                spFuelQuantity,
+                new String[]{
+                        "Select quantity",
+                        "2", "5", "10", "15"
+                }
         );
-        issueAdapter.setDropDownViewResource(
-                android.R.layout.simple_spinner_dropdown_item
+
+        spFuelType.setOnItemSelectedListener(
+                new android.widget.AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(
+                            android.widget.AdapterView<?> parent,
+                            View view,
+                            int position,
+                            long id
+                    ) {
+                        updateQuantityUnit();
+                    }
+
+                    @Override
+                    public void onNothingSelected(
+                            android.widget.AdapterView<?> parent
+                    ) {
+                    }
+                }
         );
-        spBatteryIssue.setAdapter(issueAdapter);
 
         btnSubmitBatteryRequest.setOnClickListener(
                 v -> submitRequest()
         );
+    }
+
+    private void setupSpinner(Spinner spinner, String[] options) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                options
+        );
+
+        adapter.setDropDownViewResource(
+                android.R.layout.simple_spinner_dropdown_item
+        );
+
+        spinner.setAdapter(adapter);
+    }
+
+    private void updateQuantityUnit() {
+        if (spFuelType == null || tvFuelQuantityLabel == null) {
+            return;
+        }
+
+        String fuelType = spFuelType.getSelectedItem().toString();
+
+        if ("CNG".equals(fuelType)) {
+            tvFuelQuantityLabel.setText("Fuel Quantity (kg)");
+        } else if ("EV Charging".equals(fuelType)) {
+            tvFuelQuantityLabel.setText("Charging Quantity (kWh)");
+        } else {
+            tvFuelQuantityLabel.setText("Fuel Quantity (litres)");
+        }
     }
 
     private void submitRequest() {
@@ -95,7 +155,7 @@ public class BatteryHelpActivity extends AppCompatActivity {
 
         if (user == null) {
             tvBatteryMessage.setText(
-                    "Please log in before requesting battery help."
+                    "Please log in before requesting assistance."
             );
             return;
         }
@@ -114,6 +174,20 @@ public class BatteryHelpActivity extends AppCompatActivity {
             return;
         }
 
+        if (spFuelType.getSelectedItemPosition() == 0) {
+            tvBatteryMessage.setText(
+                    "Please select a fuel type."
+            );
+            return;
+        }
+
+        if (spFuelQuantity.getSelectedItemPosition() == 0) {
+            tvBatteryMessage.setText(
+                    "Please select the fuel quantity."
+            );
+            return;
+        }
+
         String location = etBatteryLocation.getText()
                 .toString().trim();
 
@@ -126,6 +200,20 @@ public class BatteryHelpActivity extends AppCompatActivity {
         String description = etBatteryDescription.getText()
                 .toString().trim();
 
+        String fuelType = spFuelType.getSelectedItem().toString();
+        String fuelQuantity =
+                spFuelQuantity.getSelectedItem().toString();
+
+        String quantityUnit;
+
+        if ("CNG".equals(fuelType)) {
+            quantityUnit = "kg";
+        } else if ("EV Charging".equals(fuelType)) {
+            quantityUnit = "kWh";
+        } else {
+            quantityUnit = "litres";
+        }
+
         Map<String, Object> request = new HashMap<>();
 
         request.put("userId", user.getUid());
@@ -135,23 +223,28 @@ public class BatteryHelpActivity extends AppCompatActivity {
         );
 
         request.put("serviceType", "Battery Help");
+
         request.put(
                 "vehicleType",
                 spVehicleType.getSelectedItem().toString()
         );
+
         request.put(
                 "batteryIssue",
                 spBatteryIssue.getSelectedItem().toString()
         );
 
+        // New fuel selection fields
+        request.put("fuelType", fuelType);
+        request.put("fuelQuantity", fuelQuantity);
+        request.put("fuelQuantityUnit", quantityUnit);
+
         request.put("location", location);
         request.put("description", description);
 
-        // New request is pending and has no assigned technician yet.
         request.put("status", "pending");
         request.put("technicianAssigned", false);
 
-        // Empty technician fields until assignment happens.
         request.put("technicianName", "");
         request.put("technicianPhone", "");
         request.put("technicianRating", "");
@@ -167,19 +260,19 @@ public class BatteryHelpActivity extends AppCompatActivity {
                 .add(request)
                 .addOnSuccessListener(documentReference -> {
 
-                    String requestId = documentReference.getId();
-
                     tvBatteryMessage.setText(
                             "Request submitted successfully!\n"
-                                    + "Request ID: " + requestId
+                                    + "Request ID: "
+                                    + documentReference.getId()
+                                    + "\nFuel: " + fuelType
+                                    + "\nQuantity: " + fuelQuantity
+                                    + " " + quantityUnit
                                     + "\nStatus: pending"
-                                    + "\nYou can edit or cancel it "
-                                    + "before a technician is assigned."
                     );
 
                     Toast.makeText(
                             BatteryHelpActivity.this,
-                            "Battery help request saved!",
+                            "Request saved successfully!",
                             Toast.LENGTH_LONG
                     ).show();
 
@@ -188,9 +281,7 @@ public class BatteryHelpActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> {
 
                     btnSubmitBatteryRequest.setEnabled(true);
-                    btnSubmitBatteryRequest.setText(
-                            "Submit Request"
-                    );
+                    btnSubmitBatteryRequest.setText("Submit Request");
 
                     tvBatteryMessage.setText(
                             "Request could not be saved: "
