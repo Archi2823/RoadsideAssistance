@@ -8,6 +8,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -380,6 +381,10 @@ public class MyRequestsActivity extends AppCompatActivity {
         String issue = doc.getString("batteryIssue");
         String location = doc.getString("location");
         String description = doc.getString("description");
+        String fuelType = doc.getString("fuelType");
+        String fuelQuantity = doc.getString("fuelQuantity");
+        String fuelUnit = doc.getString("fuelQuantityUnit");
+        Double estimatedPrice = doc.getDouble("estimatedPrice");
         String status = doc.getString("status");
 
         boolean assigned = Boolean.TRUE.equals(
@@ -433,6 +438,9 @@ public class MyRequestsActivity extends AppCompatActivity {
                 "Request ID: " + doc.getId() +
                         "\nVehicle: " + safe(vehicle) +
                         "\nIssue: " + safe(issue) +
+                        "\nFuel type: " + safe(fuelType) +
+                        "\nFuel quantity: " + safe(fuelQuantity) + " " + safe(fuelUnit) +
+                        "\nEstimated price: " + (estimatedPrice == null ? "Not available" : String.format(java.util.Locale.getDefault(), "₹%.2f", estimatedPrice)) +
                         "\nLocation: " + safe(location) +
                         "\nDescription: " + safe(description) +
                         "\nTechnician assigned: " +
@@ -674,12 +682,68 @@ public class MyRequestsActivity extends AppCompatActivity {
             }
         }
 
+        Spinner fuelTypeSpinner = new Spinner(this);
+        String[] fuelTypes = {"Petrol", "Diesel", "CNG", "EV Charging"};
+        fuelTypeSpinner.setAdapter(new ArrayAdapter<>(
+                this, android.R.layout.simple_spinner_dropdown_item, fuelTypes));
+        String currentFuelType = doc.getString("fuelType");
+        for (int i = 0; i < fuelTypes.length; i++) {
+            if (fuelTypes[i].equals(currentFuelType)) {
+                fuelTypeSpinner.setSelection(i);
+                break;
+            }
+        }
+
+        Spinner quantitySpinner = new Spinner(this);
+        String[] quantities = {"2", "5", "10", "15"};
+        quantitySpinner.setAdapter(new ArrayAdapter<>(
+                this, android.R.layout.simple_spinner_dropdown_item, quantities));
+        String currentQuantity = doc.getString("fuelQuantity");
+        for (int i = 0; i < quantities.length; i++) {
+            if (quantities[i].equals(currentQuantity)) {
+                quantitySpinner.setSelection(i);
+                break;
+            }
+        }
+
+        TextView pricePreview = new TextView(this);
+        pricePreview.setTextSize(16);
+        pricePreview.setTypeface(null, Typeface.BOLD);
+        pricePreview.setTextColor(Color.rgb(35, 86, 190));
+        pricePreview.setPadding(0, dp(8), 0, dp(8));
+
+        Runnable refreshPrice = () -> {
+            String selectedFuel = fuelTypeSpinner.getSelectedItem().toString();
+            double quantity = Double.parseDouble(quantitySpinner.getSelectedItem().toString());
+            double rate = getFuelRate(selectedFuel);
+            pricePreview.setText(String.format(
+                    java.util.Locale.getDefault(), "Estimated price: ₹%.2f", rate * quantity));
+        };
+        AdapterView.OnItemSelectedListener priceListener = new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                refreshPrice.run();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                refreshPrice.run();
+            }
+        };
+        fuelTypeSpinner.setOnItemSelectedListener(priceListener);
+        quantitySpinner.setOnItemSelectedListener(priceListener);
+        refreshPrice.run();
+
         LinearLayout form = new LinearLayout(this);
         form.setOrientation(LinearLayout.VERTICAL);
         form.setPadding(dp(24), dp(8), dp(24), 0);
 
         form.addView(vehicleSpinner);
         form.addView(issueSpinner);
+        form.addView(labelFor("Fuel type"));
+        form.addView(fuelTypeSpinner);
+        form.addView(labelFor("Fuel quantity"));
+        form.addView(quantitySpinner);
+        form.addView(pricePreview);
         form.addView(locationInput);
         form.addView(descriptionInput);
 
@@ -714,6 +778,23 @@ public class MyRequestsActivity extends AppCompatActivity {
                             issueSpinner.getSelectedItem().toString()
                     );
 
+                    String selectedFuel = fuelTypeSpinner.getSelectedItem().toString();
+                    String selectedQuantity = quantitySpinner.getSelectedItem().toString();
+                    String selectedUnit;
+                    if ("CNG".equals(selectedFuel)) {
+                        selectedUnit = "kg";
+                    } else if ("EV Charging".equals(selectedFuel)) {
+                        selectedUnit = "kWh";
+                    } else {
+                        selectedUnit = "litres";
+                    }
+                    double updatedPrice = getFuelRate(selectedFuel)
+                            * Double.parseDouble(selectedQuantity);
+
+                    updates.put("fuelType", selectedFuel);
+                    updates.put("fuelQuantity", selectedQuantity);
+                    updates.put("fuelQuantityUnit", selectedUnit);
+                    updates.put("estimatedPrice", updatedPrice);
                     updates.put("location", location);
 
                     updates.put(
@@ -800,6 +881,29 @@ public class MyRequestsActivity extends AppCompatActivity {
                             );
                 })
                 .show();
+    }
+
+    // =====================================
+    // FUEL PRICE HELPERS
+    // =====================================
+    private double getFuelRate(String fuelType) {
+        switch (fuelType) {
+            case "Petrol": return 95.0;
+            case "Diesel": return 91.0;
+            case "CNG": return 80.0;
+            case "EV Charging": return 15.0;
+            default: return 0.0;
+        }
+    }
+
+    private TextView labelFor(String text) {
+        TextView label = new TextView(this);
+        label.setText(text);
+        label.setTextSize(14);
+        label.setTypeface(null, Typeface.BOLD);
+        label.setTextColor(Color.rgb(35, 55, 85));
+        label.setPadding(0, dp(8), 0, dp(4));
+        return label;
     }
 
     // =====================================
