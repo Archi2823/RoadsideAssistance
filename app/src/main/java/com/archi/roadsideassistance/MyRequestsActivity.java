@@ -1,6 +1,7 @@
 package com.archi.roadsideassistance;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -26,7 +27,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -44,6 +48,9 @@ public class MyRequestsActivity extends AppCompatActivity {
 
     private final List<DocumentSnapshot> allRequests = new ArrayList<>();
     private String selectedFilter = "All";
+    private Long selectedDateStartMillis = null;
+    private Long selectedDateEndMillis = null;
+    private TextView selectedDateLabel;
 
     private final String[] filters = {
             "All", "Pending", "In Progress", "Resolved", "Cancelled"
@@ -123,6 +130,41 @@ public class MyRequestsActivity extends AppCompatActivity {
 
         horizontalScroll.addView(filterContainer);
         container.addView(horizontalScroll);
+
+        // Filter requests by a selected calendar date.
+        LinearLayout dateFilterRow = new LinearLayout(this);
+        dateFilterRow.setOrientation(LinearLayout.HORIZONTAL);
+        dateFilterRow.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        dateFilterRow.setPadding(0, dp(12), 0, 0);
+
+        Button chooseDateButton = new Button(this);
+        chooseDateButton.setText("Choose Date");
+        chooseDateButton.setAllCaps(false);
+        dateFilterRow.addView(chooseDateButton, new LinearLayout.LayoutParams(
+                0, dp(44), 1f));
+
+        Button clearDateButton = new Button(this);
+        clearDateButton.setText("All Dates");
+        clearDateButton.setAllCaps(false);
+        dateFilterRow.addView(clearDateButton, new LinearLayout.LayoutParams(
+                0, dp(44), 1f));
+
+        container.addView(dateFilterRow);
+
+        selectedDateLabel = new TextView(this);
+        selectedDateLabel.setTextSize(13);
+        selectedDateLabel.setTextColor(Color.rgb(55, 65, 80));
+        selectedDateLabel.setPadding(0, dp(6), 0, 0);
+        container.addView(selectedDateLabel);
+        updateSelectedDateLabel();
+
+        chooseDateButton.setOnClickListener(v -> showDatePicker());
+        clearDateButton.setOnClickListener(v -> {
+            selectedDateStartMillis = null;
+            selectedDateEndMillis = null;
+            updateSelectedDateLabel();
+            displayFilteredRequests();
+        });
 
         requestsContainer = new LinearLayout(this);
         requestsContainer.setOrientation(LinearLayout.VERTICAL);
@@ -285,10 +327,22 @@ public class MyRequestsActivity extends AppCompatActivity {
         for (DocumentSnapshot doc : allRequests) {
 
             String status = doc.getString("status");
+            boolean matchesStatus = "All".equals(selectedFilter)
+                    || matchesFilter(status, selectedFilter);
 
-            if ("All".equals(selectedFilter)) {
-                filteredRequests.add(doc);
-            } else if (matchesFilter(status, selectedFilter)) {
+            boolean matchesDate = true;
+            if (selectedDateStartMillis != null && selectedDateEndMillis != null) {
+                Timestamp createdAt = doc.getTimestamp("createdAt");
+                if (createdAt == null) {
+                    matchesDate = false;
+                } else {
+                    long createdMillis = createdAt.toDate().getTime();
+                    matchesDate = createdMillis >= selectedDateStartMillis
+                            && createdMillis < selectedDateEndMillis;
+                }
+            }
+
+            if (matchesStatus && matchesDate) {
                 filteredRequests.add(doc);
             }
         }
@@ -296,6 +350,7 @@ public class MyRequestsActivity extends AppCompatActivity {
         TextView count = new TextView(this);
         count.setText(
                 selectedFilter + " Requests (" + filteredRequests.size() + ")"
+                        + (selectedDateStartMillis == null ? "" : " on selected date")
         );
         count.setTextSize(17);
         count.setTypeface(null, Typeface.BOLD);
@@ -326,6 +381,57 @@ public class MyRequestsActivity extends AppCompatActivity {
         for (DocumentSnapshot doc : filteredRequests) {
             showRequest(doc);
         }
+    }
+
+    private void showDatePicker() {
+        Calendar initial = Calendar.getInstance();
+        if (selectedDateStartMillis != null) {
+            initial.setTimeInMillis(selectedDateStartMillis);
+        }
+
+        DatePickerDialog picker = new DatePickerDialog(
+                this,
+                (view, year, month, dayOfMonth) -> {
+                    Calendar start = Calendar.getInstance();
+                    start.clear();
+                    start.set(year, month, dayOfMonth, 0, 0, 0);
+                    start.set(Calendar.MILLISECOND, 0);
+
+                    Calendar end = (Calendar) start.clone();
+                    end.add(Calendar.DAY_OF_MONTH, 1);
+
+                    selectedDateStartMillis = start.getTimeInMillis();
+                    selectedDateEndMillis = end.getTimeInMillis();
+                    updateSelectedDateLabel();
+                    displayFilteredRequests();
+                },
+                initial.get(Calendar.YEAR),
+                initial.get(Calendar.MONTH),
+                initial.get(Calendar.DAY_OF_MONTH)
+        );
+        picker.setTitle("View orders for date");
+        picker.show();
+    }
+
+    private void updateSelectedDateLabel() {
+        if (selectedDateLabel == null) return;
+
+        if (selectedDateStartMillis == null) {
+            selectedDateLabel.setText("Showing orders from all dates");
+        } else {
+            SimpleDateFormat format = new SimpleDateFormat(
+                    "dd MMM yyyy", java.util.Locale.getDefault());
+            selectedDateLabel.setText("Showing orders for "
+                    + format.format(new Date(selectedDateStartMillis)));
+        }
+    }
+
+    private String formatRequestDate(DocumentSnapshot doc) {
+        Timestamp timestamp = doc.getTimestamp("createdAt");
+        if (timestamp == null) return "Date unavailable";
+        SimpleDateFormat format = new SimpleDateFormat(
+                "dd MMM yyyy, hh:mm a", java.util.Locale.getDefault());
+        return format.format(timestamp.toDate());
     }
 
     private boolean matchesFilter(String status, String filter) {
@@ -436,6 +542,7 @@ public class MyRequestsActivity extends AppCompatActivity {
         TextView details = new TextView(this);
         details.setText(
                 "Request ID: " + doc.getId() +
+                        "\nOrder date: " + formatRequestDate(doc) +
                         "\nVehicle: " + safe(vehicle) +
                         "\nIssue: " + safe(issue) +
                         "\nFuel type: " + safe(fuelType) +
