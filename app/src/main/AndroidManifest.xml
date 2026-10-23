@@ -57,6 +57,10 @@
         <activity
             android:name=".FeedbackActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".TowingHelpActivity"
+            android:exported="false" />
         <!-- Login screen -->
         <activity
             android:name=".MainActivity"

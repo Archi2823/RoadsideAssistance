@@ -9,7 +9,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.archi.roadsideassistance.MainActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -24,10 +23,14 @@ public class HomeActivity extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
 
+        // Initialize views
         TextView tvWelcome = findViewById(R.id.tvWelcome);
 
         Button btnBatteryHelp =
                 findViewById(R.id.btnBatteryHelp);
+
+        Button btnTowingHelp =
+                findViewById(R.id.btnTowingHelp);
 
         Button btnMyRequests =
                 findViewById(R.id.btnMyRequests);
@@ -41,9 +44,9 @@ public class HomeActivity extends AppCompatActivity {
         ImageButton btnProfile =
                 findViewById(R.id.btnProfile);
 
+        // Check whether the user is logged in
         FirebaseUser user = auth.getCurrentUser();
 
-        // Check whether the user is logged in
         if (user == null) {
             openLoginScreen();
             return;
@@ -73,6 +76,14 @@ public class HomeActivity extends AppCompatActivity {
             startActivity(new Intent(
                     HomeActivity.this,
                     BatteryHelpActivity.class
+            ));
+        });
+
+        // Open Towing Help form
+        btnTowingHelp.setOnClickListener(v -> {
+            startActivity(new Intent(
+                    HomeActivity.this,
+                    TowingHelpActivity.class
             ));
         });
 
@@ -107,6 +118,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void openLoginScreen() {
+
         Intent intent = new Intent(
                 HomeActivity.this,
                 MainActivity.class
