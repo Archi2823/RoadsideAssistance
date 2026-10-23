@@ -1,3 +1,4 @@
+
 package com.archi.roadsideassistance;
 
 import android.content.Intent;
@@ -31,6 +32,9 @@ public class HomeActivity extends AppCompatActivity {
 
         Button btnTowingHelp =
                 findViewById(R.id.btnTowingHelp);
+
+        Button btnGarageTowingMap =
+                findViewById(R.id.btnGarageTowingMap);
 
         Button btnMyRequests =
                 findViewById(R.id.btnMyRequests);
@@ -84,6 +88,14 @@ public class HomeActivity extends AppCompatActivity {
             startActivity(new Intent(
                     HomeActivity.this,
                     TowingHelpActivity.class
+            ));
+        });
+
+        // Open Google Maps and garage/towing list
+        btnGarageTowingMap.setOnClickListener(v -> {
+            startActivity(new Intent(
+                    HomeActivity.this,
+                    GarageTowingMapActivity.class
             ));
         });
 

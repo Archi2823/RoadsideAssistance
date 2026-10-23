@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -14,7 +16,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.RoadsideAssistance">
 
-        <!-- Splash screen remains the launcher -->
+        <!-- Google Maps API key -->
+       
+        <!-- Splash screen -->
         <activity
             android:name=".Splash_screen"
             android:exported="true">
@@ -24,15 +28,17 @@
             </intent-filter>
         </activity>
 
-        <!-- Signup screen -->
+        <!-- Signup -->
         <activity
             android:name=".activity_signup"
             android:exported="false" />
 
+        <!-- Home -->
         <activity
             android:name=".HomeActivity"
             android:exported="false" />
 
+        <!-- Password management -->
         <activity
             android:name=".ChangePasswordActivity"
             android:exported="false" />
@@ -41,15 +47,27 @@
             android:name=".ResetPasswordActivity"
             android:exported="false" />
 
+        <!-- Profile -->
         <activity
             android:name=".ProfileActivity"
             android:exported="false" />
 
+        <!-- Battery Help -->
         <activity
             android:name=".BatteryHelpActivity"
             android:exported="false" />
 
+        <!-- Towing Help -->
+        <activity
+            android:name=".TowingHelpActivity"
+            android:exported="false" />
 
+        <!-- Google Maps and garage list -->
+        <activity
+            android:name=".GarageTowingMapActivity"
+            android:exported="false" />
+
+        <!-- Requests and feedback -->
         <activity
             android:name=".MyRequestsActivity"
             android:exported="false" />
@@ -58,14 +76,12 @@
             android:name=".FeedbackActivity"
             android:exported="false" />
 
-        <activity
-            android:name=".TowingHelpActivity"
-            android:exported="false" />
-        <!-- Login screen -->
+        <!-- Login -->
         <activity
             android:name=".MainActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
     </application>
+
 </manifest>

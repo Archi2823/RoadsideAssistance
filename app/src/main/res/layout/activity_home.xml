@@ -67,7 +67,7 @@
             android:textColor="#64748B"
             android:textSize="16sp" />
 
-        <!-- Request Battery Help -->
+        <!-- Battery Help -->
         <Button
             android:id="@+id/btnBatteryHelp"
             android:layout_width="match_parent"
@@ -79,13 +79,26 @@
             android:textColor="#FFFFFF"
             android:textSize="16sp" />
 
+        <!-- Towing Help -->
         <Button
             android:id="@+id/btnTowingHelp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             android:layout_marginTop="12dp"
             android:backgroundTint="#2457C5"
             android:text="Towing Help"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
+
+        <!-- Nearby Garages and Towing Map -->
+        <Button
+            android:id="@+id/btnGarageTowingMap"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="12dp"
+            android:backgroundTint="#173B6C"
+            android:text="Nearby Garages &amp; Towing"
             android:textAllCaps="false"
             android:textColor="#FFFFFF"
             android:textSize="16sp" />
