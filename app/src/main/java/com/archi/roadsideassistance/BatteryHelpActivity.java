@@ -167,7 +167,66 @@ public class BatteryHelpActivity extends AppCompatActivity {
                 v -> submitRequest()
         );
 
+        // If opened using "Request Again", prefill the previous order.
+        applyRequestAgainPrefill();
+        updateQuantityUnit();
         updateEstimatedPrice();
+    }
+
+    /**
+     * Prefills the form from Intent extras sent by MyRequestsActivity.
+     * This creates a NEW request when the user submits; it does not edit the old order.
+     */
+    private void applyRequestAgainPrefill() {
+        if (!getIntent().getBooleanExtra("prefillRequestAgain", false)) {
+            return;
+        }
+
+        selectSpinnerValue(spVehicleType,
+                getIntent().getStringExtra("prefillVehicleType"));
+        selectSpinnerValue(spBatteryIssue,
+                getIntent().getStringExtra("prefillBatteryIssue"));
+        selectSpinnerValue(spFuelType,
+                getIntent().getStringExtra("prefillFuelType"));
+        selectSpinnerValue(spFuelQuantity,
+                getIntent().getStringExtra("prefillFuelQuantity"));
+
+        String location = getIntent().getStringExtra("prefillLocation");
+        if (location != null && !location.trim().isEmpty()
+                && !"-".equals(location.trim())) {
+            etBatteryLocation.setText(location);
+        }
+
+        String description = getIntent().getStringExtra("prefillDescription");
+        if (description != null && !"-".equals(description)) {
+            etBatteryDescription.setText(description);
+        }
+
+        if (tvBatteryMessage != null) {
+            tvBatteryMessage.setText(
+                    "Previous order details loaded. Review them and submit to create a new request."
+            );
+        }
+    }
+
+    private void selectSpinnerValue(Spinner spinner, String value) {
+        if (spinner == null || value == null || value.trim().isEmpty()
+                || "-".equals(value.trim())) {
+            return;
+        }
+
+        ArrayAdapter adapter = (ArrayAdapter) spinner.getAdapter();
+        if (adapter == null) {
+            return;
+        }
+
+        for (int i = 0; i < adapter.getCount(); i++) {
+            Object item = adapter.getItem(i);
+            if (item != null && value.trim().equalsIgnoreCase(item.toString().trim())) {
+                spinner.setSelection(i);
+                return;
+            }
+        }
     }
 
     private void setupSpinner(Spinner spinner, String[] options) {
@@ -456,3 +515,4 @@ public class BatteryHelpActivity extends AppCompatActivity {
                 });
     }
 }
+

@@ -560,18 +560,26 @@ public class MyRequestsActivity extends AppCompatActivity {
 
         card.addView(details);
 
+        // Request Again is available for previous orders of any status.
+        // It opens the new-request form and passes the previous order details.
+        Button requestAgain = new Button(this);
+        requestAgain.setText("Request Again");
+        requestAgain.setAllCaps(false);
+        card.addView(requestAgain);
+        requestAgain.setOnClickListener(v -> requestAgain(doc));
+
         if (editable) {
 
             Button edit = new Button(this);
             edit.setText("Edit Request");
+            edit.setAllCaps(false);
             card.addView(edit);
-
             edit.setOnClickListener(v -> editRequest(doc));
 
             Button cancel = new Button(this);
             cancel.setText("Cancel Request");
+            cancel.setAllCaps(false);
             card.addView(cancel);
-
             cancel.setOnClickListener(v -> confirmCancel(doc));
 
         } else if (resolved) {
@@ -588,6 +596,30 @@ public class MyRequestsActivity extends AppCompatActivity {
             note.setPadding(0, dp(8), 0, 0);
             card.addView(note);
         }
+    }
+
+
+    // =====================================
+    // REQUEST AGAIN: PASS PREVIOUS ORDER AS PREFILL DATA
+    // =====================================
+    private void requestAgain(DocumentSnapshot doc) {
+        Intent intent = new Intent(MyRequestsActivity.this, BatteryHelpActivity.class);
+        intent.putExtra("prefillRequestAgain", true);
+        intent.putExtra("prefillServiceType", safe(doc.getString("serviceType")));
+        intent.putExtra("prefillVehicleType", safe(doc.getString("vehicleType")));
+        intent.putExtra("prefillBatteryIssue", safe(doc.getString("batteryIssue")));
+        intent.putExtra("prefillFuelType", safe(doc.getString("fuelType")));
+        intent.putExtra("prefillFuelQuantity", safe(doc.getString("fuelQuantity")));
+        intent.putExtra("prefillFuelQuantityUnit", safe(doc.getString("fuelQuantityUnit")));
+        intent.putExtra("prefillLocation", safe(doc.getString("location")));
+        intent.putExtra("prefillDescription", safe(doc.getString("description")));
+
+        Double previousPrice = doc.getDouble("estimatedPrice");
+        if (previousPrice != null) {
+            intent.putExtra("prefillEstimatedPrice", previousPrice);
+        }
+
+        startActivity(intent);
     }
 
     private int statusColor(String status) {
