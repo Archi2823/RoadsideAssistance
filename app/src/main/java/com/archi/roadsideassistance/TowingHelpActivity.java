@@ -1,3 +1,4 @@
+
 package com.archi.roadsideassistance;
 
 import android.os.Bundle;
@@ -36,26 +37,20 @@ public class TowingHelpActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-        spTowingVehicleType =
-                findViewById(R.id.spTowingVehicleType);
-        spTowingIssue =
-                findViewById(R.id.spTowingIssue);
+        spTowingVehicleType = findViewById(R.id.spTowingVehicleType);
+        spTowingIssue = findViewById(R.id.spTowingIssue);
 
-        etPickupLocation =
-                findViewById(R.id.etPickupLocation);
-        etDestination =
-                findViewById(R.id.etTowingDestination);
-        etTowingDetails =
-                findViewById(R.id.etTowingDetails);
+        etPickupLocation = findViewById(R.id.etPickupLocation);
+        etDestination = findViewById(R.id.etTowingDestination);
+        etTowingDetails = findViewById(R.id.etTowingDetails);
 
         btnSubmitTowingRequest =
                 findViewById(R.id.btnSubmitTowingRequest);
 
         setupSpinners();
 
-        // Default selections
-        spTowingVehicleType.setSelection(1); // Car
-        spTowingIssue.setSelection(0);       // Vehicle breakdown
+        spTowingVehicleType.setSelection(1);
+        spTowingIssue.setSelection(0);
 
         btnSubmitTowingRequest.setOnClickListener(
                 v -> submitTowingRequest()
@@ -110,7 +105,6 @@ public class TowingHelpActivity extends AppCompatActivity {
 
     private void submitTowingRequest() {
 
-        // Check authenticated user
         FirebaseUser user = auth.getCurrentUser();
 
         if (user == null) {
@@ -137,7 +131,6 @@ public class TowingHelpActivity extends AppCompatActivity {
         String details =
                 etTowingDetails.getText().toString().trim();
 
-        // Validate pickup location
         if (TextUtils.isEmpty(pickupLocation)) {
             etPickupLocation.setError(
                     "Please enter the pickup location"
@@ -154,10 +147,8 @@ public class TowingHelpActivity extends AppCompatActivity {
             return;
         }
 
-        // Validate destination only when provided
         if (!TextUtils.isEmpty(destination)
                 && destination.length() < 3) {
-
             etDestination.setError(
                     "Enter a valid destination or leave it blank"
             );
@@ -165,11 +156,9 @@ public class TowingHelpActivity extends AppCompatActivity {
             return;
         }
 
-        // Prepare Firestore document
         Map<String, Object> request = new HashMap<>();
 
         request.put("userId", user.getUid());
-
         request.put(
                 "userEmail",
                 user.getEmail() == null ? "" : user.getEmail()
@@ -178,28 +167,22 @@ public class TowingHelpActivity extends AppCompatActivity {
         request.put("serviceType", "Towing Help");
         request.put("vehicleType", vehicleType);
         request.put("towingIssue", towingIssue);
-
-        // Pickup location is stored in the existing location field
         request.put("location", pickupLocation);
-
         request.put("destination", destination);
         request.put("description", details);
 
+        // Initial request status
         request.put("status", "pending");
 
-        // Initially, no technician is assigned
+        // Assignment fields before simulated assignment
         request.put("technicianAssigned", false);
         request.put("technicianName", "");
         request.put("technicianPhone", "");
         request.put("technicianRating", "");
         request.put("technicianType", "");
 
-        request.put(
-                "createdAt",
-                FieldValue.serverTimestamp()
-        );
+        request.put("createdAt", FieldValue.serverTimestamp());
 
-        // Prevent duplicate taps while submitting
         btnSubmitTowingRequest.setEnabled(false);
         btnSubmitTowingRequest.setText("Submitting...");
 
@@ -207,9 +190,51 @@ public class TowingHelpActivity extends AppCompatActivity {
                 .add(request)
                 .addOnSuccessListener(documentReference -> {
 
+                    // Request is saved. Now simulate assignment.
+                    simulateAssignment(documentReference.getId());
+
+                })
+                .addOnFailureListener(e -> {
+
+                    btnSubmitTowingRequest.setEnabled(true);
+                    btnSubmitTowingRequest.setText(
+                            "Submit Towing Request"
+                    );
+
                     Toast.makeText(
                             TowingHelpActivity.this,
-                            "Towing request submitted successfully!",
+                            "Request failed: " + e.getLocalizedMessage(),
+                            Toast.LENGTH_LONG
+                    ).show();
+                });
+    }
+
+    private void simulateAssignment(String requestId) {
+
+        Map<String, Object> assignment = new HashMap<>();
+
+        // Demo provider, not a verified real business
+        assignment.put(
+                "technicianName",
+                "Towing Point 1 (Demo)"
+        );
+
+        assignment.put("technicianPhone", "");
+        assignment.put("technicianRating", "");
+        assignment.put("technicianType", "Towing Service");
+
+        assignment.put("technicianAssigned", true);
+        assignment.put("status", "assigned");
+        assignment.put("assignedAt", FieldValue.serverTimestamp());
+
+        db.collection("serviceRequests")
+                .document(requestId)
+                .update(assignment)
+                .addOnSuccessListener(unused -> {
+
+                    Toast.makeText(
+                            TowingHelpActivity.this,
+                            "Towing request saved and demo service assigned!",
                             Toast.LENGTH_LONG
                     ).show();
 
@@ -224,7 +249,7 @@ public class TowingHelpActivity extends AppCompatActivity {
 
                     Toast.makeText(
                             TowingHelpActivity.this,
-                            "Request failed: "
+                            "Request was saved, but assignment failed: "
                                     + e.getLocalizedMessage(),
                             Toast.LENGTH_LONG
                     ).show();
