@@ -26,6 +26,7 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -45,6 +46,8 @@ public class MyRequestsActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
     private String uid;
+    private ListenerRegistration requestsListener;
+    private boolean requestUiBuilt = false;
 
     private final List<DocumentSnapshot> allRequests = new ArrayList<>();
     private String selectedFilter = "All";
@@ -53,7 +56,7 @@ public class MyRequestsActivity extends AppCompatActivity {
     private TextView selectedDateLabel;
 
     private final String[] filters = {
-            "All", "Pending", "In Progress", "Resolved", "Cancelled"
+            "All", "Pending", "Assigned", "In Progress", "Resolved", "Cancelled"
     };
 
     @Override
@@ -93,100 +96,120 @@ public class MyRequestsActivity extends AppCompatActivity {
     }
 
     // =====================================
-    // LOAD REQUESTS FROM FIRESTORE
+    // LOAD REQUESTS FROM FIRESTORE IN REAL TIME
     // =====================================
     private void loadRequests() {
 
-        container.removeAllViews();
-        allRequests.clear();
+        // Build the screen only once. The Firestore listener below refreshes
+        // the request cards whenever a request changes in Firebase.
+        if (!requestUiBuilt) {
+            container.removeAllViews();
 
-        TextView heading = new TextView(this);
-        heading.setText("My Request History");
-        heading.setTextSize(25);
-        heading.setTypeface(null, Typeface.BOLD);
-        heading.setTextColor(Color.rgb(28, 59, 104));
-        heading.setPadding(0, 0, 0, dp(8));
-        container.addView(heading);
+            TextView heading = new TextView(this);
+            heading.setText("My Request History");
+            heading.setTextSize(25);
+            heading.setTypeface(null, Typeface.BOLD);
+            heading.setTextColor(Color.rgb(28, 59, 104));
+            heading.setPadding(0, 0, 0, dp(8));
+            container.addView(heading);
 
-        TextView subtitle = new TextView(this);
-        subtitle.setText("View and track all your roadside requests");
-        subtitle.setTextSize(14);
-        subtitle.setTextColor(Color.DKGRAY);
-        subtitle.setPadding(0, 0, 0, dp(18));
-        container.addView(subtitle);
+            TextView subtitle = new TextView(this);
+            subtitle.setText("View and track all your roadside requests");
+            subtitle.setTextSize(14);
+            subtitle.setTextColor(Color.DKGRAY);
+            subtitle.setPadding(0, 0, 0, dp(18));
+            container.addView(subtitle);
 
-        TextView filterHeading = new TextView(this);
-        filterHeading.setText("Filter by status");
-        filterHeading.setTextSize(16);
-        filterHeading.setTypeface(null, Typeface.BOLD);
-        filterHeading.setPadding(0, 0, 0, dp(10));
-        container.addView(filterHeading);
+            TextView filterHeading = new TextView(this);
+            filterHeading.setText("Filter by status");
+            filterHeading.setTextSize(16);
+            filterHeading.setTypeface(null, Typeface.BOLD);
+            filterHeading.setPadding(0, 0, 0, dp(10));
+            container.addView(filterHeading);
 
-        HorizontalScrollView horizontalScroll = new HorizontalScrollView(this);
-        horizontalScroll.setHorizontalScrollBarEnabled(false);
+            HorizontalScrollView horizontalScroll = new HorizontalScrollView(this);
+            horizontalScroll.setHorizontalScrollBarEnabled(false);
 
-        filterContainer = new LinearLayout(this);
-        filterContainer.setOrientation(LinearLayout.HORIZONTAL);
+            filterContainer = new LinearLayout(this);
+            filterContainer.setOrientation(LinearLayout.HORIZONTAL);
+            horizontalScroll.addView(filterContainer);
+            container.addView(horizontalScroll);
 
-        horizontalScroll.addView(filterContainer);
-        container.addView(horizontalScroll);
+            // Filter requests by a selected calendar date.
+            LinearLayout dateFilterRow = new LinearLayout(this);
+            dateFilterRow.setOrientation(LinearLayout.HORIZONTAL);
+            dateFilterRow.setGravity(android.view.Gravity.CENTER_VERTICAL);
+            dateFilterRow.setPadding(0, dp(12), 0, 0);
 
-        // Filter requests by a selected calendar date.
-        LinearLayout dateFilterRow = new LinearLayout(this);
-        dateFilterRow.setOrientation(LinearLayout.HORIZONTAL);
-        dateFilterRow.setGravity(android.view.Gravity.CENTER_VERTICAL);
-        dateFilterRow.setPadding(0, dp(12), 0, 0);
+            Button chooseDateButton = new Button(this);
+            chooseDateButton.setText("Choose Date");
+            chooseDateButton.setAllCaps(false);
+            dateFilterRow.addView(chooseDateButton, new LinearLayout.LayoutParams(
+                    0, dp(44), 1f));
 
-        Button chooseDateButton = new Button(this);
-        chooseDateButton.setText("Choose Date");
-        chooseDateButton.setAllCaps(false);
-        dateFilterRow.addView(chooseDateButton, new LinearLayout.LayoutParams(
-                0, dp(44), 1f));
+            Button clearDateButton = new Button(this);
+            clearDateButton.setText("All Dates");
+            clearDateButton.setAllCaps(false);
+            dateFilterRow.addView(clearDateButton, new LinearLayout.LayoutParams(
+                    0, dp(44), 1f));
 
-        Button clearDateButton = new Button(this);
-        clearDateButton.setText("All Dates");
-        clearDateButton.setAllCaps(false);
-        dateFilterRow.addView(clearDateButton, new LinearLayout.LayoutParams(
-                0, dp(44), 1f));
+            container.addView(dateFilterRow);
 
-        container.addView(dateFilterRow);
-
-        selectedDateLabel = new TextView(this);
-        selectedDateLabel.setTextSize(13);
-        selectedDateLabel.setTextColor(Color.rgb(55, 65, 80));
-        selectedDateLabel.setPadding(0, dp(6), 0, 0);
-        container.addView(selectedDateLabel);
-        updateSelectedDateLabel();
-
-        chooseDateButton.setOnClickListener(v -> showDatePicker());
-        clearDateButton.setOnClickListener(v -> {
-            selectedDateStartMillis = null;
-            selectedDateEndMillis = null;
+            selectedDateLabel = new TextView(this);
+            selectedDateLabel.setTextSize(13);
+            selectedDateLabel.setTextColor(Color.rgb(55, 65, 80));
+            selectedDateLabel.setPadding(0, dp(6), 0, 0);
+            container.addView(selectedDateLabel);
             updateSelectedDateLabel();
-            displayFilteredRequests();
-        });
 
-        requestsContainer = new LinearLayout(this);
-        requestsContainer.setOrientation(LinearLayout.VERTICAL);
+            chooseDateButton.setOnClickListener(v -> showDatePicker());
+            clearDateButton.setOnClickListener(v -> {
+                selectedDateStartMillis = null;
+                selectedDateEndMillis = null;
+                updateSelectedDateLabel();
+                displayFilteredRequests();
+            });
 
-        LinearLayout.LayoutParams requestsParams =
-                new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT
-                );
+            requestsContainer = new LinearLayout(this);
+            requestsContainer.setOrientation(LinearLayout.VERTICAL);
 
-        requestsParams.topMargin = dp(18);
-        container.addView(requestsContainer, requestsParams);
+            LinearLayout.LayoutParams requestsParams =
+                    new LinearLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT
+                    );
+            requestsParams.topMargin = dp(18);
+            container.addView(requestsContainer, requestsParams);
 
-        createFilterButtons();
-        showLoading();
+            createFilterButtons();
+            showLoading();
+            requestUiBuilt = true;
+        }
 
-        db.collection("serviceRequests")
+        // Avoid registering duplicate listeners when the activity resumes or
+        // when edit/cancel operations call loadRequests().
+        if (requestsListener != null) {
+            return;
+        }
+
+        requestsListener = db.collection("serviceRequests")
                 .whereEqualTo("userId", uid)
-                .get()
-                .addOnSuccessListener(snapshot -> {
+                .addSnapshotListener((snapshot, error) -> {
 
                     if (isFinishing() || isDestroyed()) {
+                        return;
+                    }
+
+                    if (error != null) {
+                        requestsContainer.removeAllViews();
+                        addTextTo(
+                                requestsContainer,
+                                "Could not load requests: " + error.getMessage()
+                        );
+                        return;
+                    }
+
+                    if (snapshot == null) {
                         return;
                     }
 
@@ -200,43 +223,34 @@ public class MyRequestsActivity extends AppCompatActivity {
                                 DocumentSnapshot first,
                                 DocumentSnapshot second
                         ) {
-                            Timestamp firstTime =
-                                    first.getTimestamp("createdAt");
-
-                            Timestamp secondTime =
-                                    second.getTimestamp("createdAt");
+                            Timestamp firstTime = first.getTimestamp("createdAt");
+                            Timestamp secondTime = second.getTimestamp("createdAt");
 
                             if (firstTime == null && secondTime == null) {
                                 return 0;
                             }
-
                             if (firstTime == null) {
                                 return 1;
                             }
-
                             if (secondTime == null) {
                                 return -1;
                             }
-
                             return secondTime.compareTo(firstTime);
                         }
                     });
 
                     updateFilterButtons();
                     displayFilteredRequests();
-                })
-                .addOnFailureListener(e -> {
-
-                    if (isFinishing() || isDestroyed()) {
-                        return;
-                    }
-
-                    requestsContainer.removeAllViews();
-                    addTextTo(
-                            requestsContainer,
-                            "Could not load requests: " + e.getMessage()
-                    );
                 });
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (requestsListener != null) {
+            requestsListener.remove();
+            requestsListener = null;
+        }
+        super.onDestroy();
     }
 
     // =====================================
@@ -450,6 +464,9 @@ public class MyRequestsActivity extends AppCompatActivity {
             case "Pending":
                 return normalized.equals("pending");
 
+            case "Assigned":
+                return normalized.equals("assigned");
+
             case "In Progress":
                 return normalized.equals("in progress")
                         || normalized.equals("inprogress");
@@ -628,10 +645,15 @@ public class MyRequestsActivity extends AppCompatActivity {
             return Color.DKGRAY;
         }
 
-        switch (status.trim().toLowerCase()) {
+        switch (status.trim().toLowerCase()
+                .replace("_", " ")
+                .replace("-", " ")) {
 
             case "pending":
                 return Color.rgb(190, 115, 0);
+
+            case "assigned":
+                return Color.rgb(120, 70, 170);
 
             case "in progress":
             case "in_progress":
@@ -671,6 +693,10 @@ public class MyRequestsActivity extends AppCompatActivity {
 
         if (normalized.equals("pending")) {
             return "Pending";
+        }
+
+        if (normalized.equals("assigned")) {
+            return "Assigned";
         }
 
         if (normalized.equals("cancelled")
