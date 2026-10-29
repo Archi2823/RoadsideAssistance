@@ -3,6 +3,8 @@ package com.archi.roadsideassistance;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.content.ActivityNotFoundException;
+import android.net.Uri;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
@@ -577,6 +579,66 @@ public class MyRequestsActivity extends AppCompatActivity {
 
         card.addView(details);
 
+        // Show assigned towing/technician contact details when available.
+        // ACTION_DIAL opens the phone app without requiring CALL_PHONE permission.
+        String technicianName = doc.getString("technicianName");
+        String technicianPhone = doc.getString("technicianPhone");
+        String technicianType = doc.getString("technicianType");
+        String technicianRating = doc.getString("technicianRating");
+        boolean serviceAssigned = assigned
+                || "assigned".equalsIgnoreCase(status)
+                || "in progress".equalsIgnoreCase(status)
+                || "in_progress".equalsIgnoreCase(status);
+
+        if (serviceAssigned) {
+            TextView contactHeading = new TextView(this);
+            contactHeading.setText("Assigned Service Contact");
+            contactHeading.setTextSize(16);
+            contactHeading.setTypeface(null, Typeface.BOLD);
+            contactHeading.setTextColor(Color.rgb(28, 59, 104));
+            contactHeading.setPadding(0, dp(14), 0, dp(6));
+            card.addView(contactHeading);
+
+            TextView contactDetails = new TextView(this);
+            StringBuilder contactText = new StringBuilder();
+            contactText.append("Service: ").append(safe(technicianName));
+            if (technicianType != null && !technicianType.trim().isEmpty()) {
+                contactText.append("\nService type: ").append(technicianType.trim());
+            }
+            if (technicianRating != null && !technicianRating.trim().isEmpty()) {
+                contactText.append("\nRating: ").append(technicianRating.trim());
+            }
+            if (technicianPhone != null && !technicianPhone.trim().isEmpty()) {
+                contactText.append("\nPhone: ").append(technicianPhone.trim());
+            } else {
+                contactText.append("\nContact number: Not available yet");
+            }
+            contactDetails.setText(contactText.toString());
+            contactDetails.setTextSize(14);
+            contactDetails.setTextColor(Color.rgb(55, 65, 80));
+            contactDetails.setLineSpacing(dp(3), 1.0f);
+            card.addView(contactDetails);
+
+            if (technicianPhone != null && !technicianPhone.trim().isEmpty()) {
+                Button callButton = new Button(this);
+                callButton.setText("Call Assigned Service");
+                callButton.setAllCaps(false);
+                card.addView(callButton);
+                callButton.setOnClickListener(v ->
+                        contactTowingService(technicianPhone)
+                );
+            } else {
+                TextView noPhoneNote = new TextView(this);
+                noPhoneNote.setText(
+                        "Calling is unavailable because this demo service has no phone number saved."
+                );
+                noPhoneNote.setTextSize(12);
+                noPhoneNote.setTextColor(Color.rgb(120, 80, 40));
+                noPhoneNote.setPadding(0, dp(4), 0, dp(4));
+                card.addView(noPhoneNote);
+            }
+        }
+
         // Request Again is available for previous orders of any status.
         // It opens the new-request form and passes the previous order details.
         Button requestAgain = new Button(this);
@@ -615,6 +677,83 @@ public class MyRequestsActivity extends AppCompatActivity {
         }
     }
 
+
+    // =====================================
+    // CONTACT ASSIGNED TOWING SERVICE
+    // =====================================
+    private void contactTowingService(String phoneNumber) {
+        if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
+            Toast.makeText(
+                    this,
+                    "Towing service phone number is unavailable.",
+                    Toast.LENGTH_LONG
+            ).show();
+            return;
+        }
+
+        String dialNumber = phoneNumber.trim();
+
+        Intent dialIntent = new Intent(
+                Intent.ACTION_DIAL,
+                Uri.parse("tel:" + Uri.encode(dialNumber))
+        );
+
+        try {
+            // ACTION_DIAL does not require CALL_PHONE permission.
+            if (dialIntent.resolveActivity(getPackageManager()) != null) {
+                startActivity(dialIntent);
+                return;
+            }
+        } catch (ActivityNotFoundException | SecurityException e) {
+            // Show the fallback below if the device cannot open a dialer.
+        }
+
+        // Some emulators/tablets do not have a dialer app. Let the user copy
+        // the saved number instead of showing only an error message.
+        EditText phoneInput = new EditText(this);
+        phoneInput.setText(dialNumber);
+        phoneInput.setSingleLine(true);
+        phoneInput.setSelectAllOnFocus(true);
+        phoneInput.setInputType(android.text.InputType.TYPE_CLASS_PHONE);
+        phoneInput.setFocusable(false);
+        phoneInput.setTextIsSelectable(true);
+
+        new AlertDialog.Builder(this)
+                .setTitle("Dialer Not Available")
+                .setMessage(
+                        "This device has no phone dialer installed. " +
+                                "You can copy the towing service number and call it " +
+                                "from a phone that supports calls."
+                )
+                .setView(phoneInput)
+                .setPositiveButton("Copy Number", (dialog, which) -> {
+                    android.content.ClipboardManager clipboard =
+                            (android.content.ClipboardManager)
+                                    getSystemService(CLIPBOARD_SERVICE);
+
+                    if (clipboard != null) {
+                        android.content.ClipData clip =
+                                android.content.ClipData.newPlainText(
+                                        "Towing service phone number",
+                                        dialNumber
+                                );
+                        clipboard.setPrimaryClip(clip);
+                        Toast.makeText(
+                                MyRequestsActivity.this,
+                                "Phone number copied.",
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    } else {
+                        Toast.makeText(
+                                MyRequestsActivity.this,
+                                "Could not copy the number. Number: " + dialNumber,
+                                Toast.LENGTH_LONG
+                        ).show();
+                    }
+                })
+                .setNegativeButton("Close", null)
+                .show();
+    }
 
     // =====================================
     // REQUEST AGAIN: PASS PREVIOUS ORDER AS PREFILL DATA
