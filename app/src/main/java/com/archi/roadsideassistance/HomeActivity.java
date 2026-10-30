@@ -50,6 +50,9 @@ public class HomeActivity extends AppCompatActivity {
         Button btnLogout =
                 findViewById(R.id.btnLogout);
 
+        Button btnAvailableMechanics =
+                findViewById(R.id.btnAvailableMechanics);
+
         ImageButton btnProfile =
                 findViewById(R.id.btnProfile);
 
@@ -88,7 +91,7 @@ public class HomeActivity extends AppCompatActivity {
             ));
         });
 
-        // Open Google Maps and garage/towing list
+        // Open Garage/Towing Map
         btnGarageTowingMap.setOnClickListener(v -> {
             startActivity(new Intent(
                     HomeActivity.this,
@@ -101,6 +104,14 @@ public class HomeActivity extends AppCompatActivity {
             startActivity(new Intent(
                     HomeActivity.this,
                     MyRequestsActivity.class
+            ));
+        });
+
+        // Open Available Mechanics screen
+        btnAvailableMechanics.setOnClickListener(v -> {
+            startActivity(new Intent(
+                    HomeActivity.this,
+                    AvailableMechanicsActivity.class
             ));
         });
 
