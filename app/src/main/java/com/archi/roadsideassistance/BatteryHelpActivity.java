@@ -1,3 +1,4 @@
+
 package com.archi.roadsideassistance;
 
 import android.os.Bundle;
@@ -38,13 +39,27 @@ public class BatteryHelpActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private FirebaseFirestore db;
 
-    // Example rates only. Update these with your actual rates.
     private static final double PETROL_RATE = 95.0;
     private static final double DIESEL_RATE = 91.0;
     private static final double CNG_RATE = 80.0;
     private static final double EV_RATE = 15.0;
 
     private double estimatedPrice = 0.0;
+
+    private final String[] vehicleIssues = {
+            "Select vehicle issue",
+            "Engine Problem",
+            "Brake Failure",
+            "Battery Problem",
+            "Flat Tyre",
+            "Clutch Problem",
+            "Steering Problem",
+            "Overheating",
+            "Fuel Problem",
+            "Accident / Breakdown",
+            "Vehicle not starting",
+            "Other"
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,73 +69,50 @@ public class BatteryHelpActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-        // Spinners
         spVehicleType = findViewById(R.id.spVehicleType);
         spBatteryIssue = findViewById(R.id.spBatteryIssue);
         spFuelType = findViewById(R.id.spFuelType);
         spFuelQuantity = findViewById(R.id.spFuelQuantity);
 
-        // Input fields
         etBatteryLocation = findViewById(R.id.etBatteryLocation);
         etBatteryDescription = findViewById(R.id.etBatteryDescription);
 
-        // TextViews
         tvBatteryMessage = findViewById(R.id.tvBatteryMessage);
         tvFuelQuantityLabel = findViewById(R.id.tvFuelQuantityLabel);
         tvEstimatedPrice = findViewById(R.id.tvEstimatedPrice);
         tvPriceNote = findViewById(R.id.tvPriceNote);
 
-        // Button
         btnSubmitBatteryRequest =
                 findViewById(R.id.btnSubmitBatteryRequest);
 
-        setupSpinner(
-                spVehicleType,
-                new String[]{
-                        "Select vehicle type",
-                        "Bike",
-                        "Car",
-                        "SUV",
-                        "Truck",
-                        "Other"
-                }
-        );
+        setupSpinner(spVehicleType, new String[]{
+                "Select vehicle type",
+                "Bike",
+                "Car",
+                "SUV",
+                "Truck",
+                "Other"
+        });
 
-        setupSpinner(
-                spBatteryIssue,
-                new String[]{
-                        "Select battery issue",
-                        "Battery dead",
-                        "Vehicle not starting",
-                        "Jump-start required",
-                        "Battery replacement required",
-                        "Other"
-                }
-        );
+        // General vehicle issues
+        setupSpinner(spBatteryIssue, vehicleIssues);
 
-        setupSpinner(
-                spFuelType,
-                new String[]{
-                        "Select fuel type",
-                        "Petrol",
-                        "Diesel",
-                        "CNG",
-                        "EV Charging"
-                }
-        );
+        setupSpinner(spFuelType, new String[]{
+                "Select fuel type",
+                "Petrol",
+                "Diesel",
+                "CNG",
+                "EV Charging"
+        });
 
-        setupSpinner(
-                spFuelQuantity,
-                new String[]{
-                        "Select quantity",
-                        "2",
-                        "5",
-                        "10",
-                        "15"
-                }
-        );
+        setupSpinner(spFuelQuantity, new String[]{
+                "Select quantity",
+                "2",
+                "5",
+                "10",
+                "15"
+        });
 
-        // Update unit and price when fuel type changes
         spFuelType.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     @Override
@@ -135,14 +127,12 @@ public class BatteryHelpActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onNothingSelected(
-                            AdapterView<?> parent) {
+                    public void onNothingSelected(AdapterView<?> parent) {
                         updateEstimatedPrice();
                     }
                 }
         );
 
-        // Update price when quantity changes
         spFuelQuantity.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     @Override
@@ -156,8 +146,7 @@ public class BatteryHelpActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onNothingSelected(
-                            AdapterView<?> parent) {
+                    public void onNothingSelected(AdapterView<?> parent) {
                         updateEstimatedPrice();
                     }
                 }
@@ -167,67 +156,97 @@ public class BatteryHelpActivity extends AppCompatActivity {
                 v -> submitRequest()
         );
 
-        // If opened using "Request Again", prefill the previous order.
         applyRequestAgainPrefill();
+
         updateQuantityUnit();
         updateEstimatedPrice();
     }
 
-    /**
-     * Prefills the form from Intent extras sent by MyRequestsActivity.
-     * This creates a NEW request when the user submits; it does not edit the old order.
-     */
+    // =====================================
+    // REQUEST AGAIN PREFILL
+    // =====================================
+
     private void applyRequestAgainPrefill() {
+
         if (!getIntent().getBooleanExtra("prefillRequestAgain", false)) {
             return;
         }
 
-        selectSpinnerValue(spVehicleType,
-                getIntent().getStringExtra("prefillVehicleType"));
-        selectSpinnerValue(spBatteryIssue,
-                getIntent().getStringExtra("prefillBatteryIssue"));
-        selectSpinnerValue(spFuelType,
-                getIntent().getStringExtra("prefillFuelType"));
-        selectSpinnerValue(spFuelQuantity,
-                getIntent().getStringExtra("prefillFuelQuantity"));
+        selectSpinnerValue(
+                spVehicleType,
+                getIntent().getStringExtra("prefillVehicleType")
+        );
 
-        String location = getIntent().getStringExtra("prefillLocation");
+        String previousIssue =
+                getIntent().getStringExtra("prefillVehicleIssue");
+
+        if (previousIssue == null || previousIssue.trim().isEmpty()) {
+            previousIssue =
+                    getIntent().getStringExtra("prefillBatteryIssue");
+        }
+
+        selectSpinnerValue(spBatteryIssue, previousIssue);
+
+        selectSpinnerValue(
+                spFuelType,
+                getIntent().getStringExtra("prefillFuelType")
+        );
+
+        selectSpinnerValue(
+                spFuelQuantity,
+                getIntent().getStringExtra("prefillFuelQuantity")
+        );
+
+        String location =
+                getIntent().getStringExtra("prefillLocation");
+
         if (location != null && !location.trim().isEmpty()
                 && !"-".equals(location.trim())) {
             etBatteryLocation.setText(location);
         }
 
-        String description = getIntent().getStringExtra("prefillDescription");
+        String description =
+                getIntent().getStringExtra("prefillDescription");
+
         if (description != null && !"-".equals(description)) {
             etBatteryDescription.setText(description);
         }
 
-        if (tvBatteryMessage != null) {
-            tvBatteryMessage.setText(
-                    "Previous order details loaded. Review them and submit to create a new request."
-            );
-        }
+        tvBatteryMessage.setText(
+                "Previous request details loaded. Review and submit to create a new request."
+        );
     }
 
     private void selectSpinnerValue(Spinner spinner, String value) {
-        if (spinner == null || value == null || value.trim().isEmpty()
+
+        if (spinner == null || value == null
+                || value.trim().isEmpty()
                 || "-".equals(value.trim())) {
             return;
         }
 
         ArrayAdapter adapter = (ArrayAdapter) spinner.getAdapter();
+
         if (adapter == null) {
             return;
         }
 
         for (int i = 0; i < adapter.getCount(); i++) {
+
             Object item = adapter.getItem(i);
-            if (item != null && value.trim().equalsIgnoreCase(item.toString().trim())) {
+
+            if (item != null &&
+                    value.trim().equalsIgnoreCase(item.toString().trim())) {
+
                 spinner.setSelection(i);
                 return;
             }
         }
     }
+
+    // =====================================
+    // SPINNER SETUP
+    // =====================================
 
     private void setupSpinner(Spinner spinner, String[] options) {
 
@@ -244,10 +263,14 @@ public class BatteryHelpActivity extends AppCompatActivity {
         spinner.setAdapter(adapter);
     }
 
-    // Get example rate for selected fuel
+    // =====================================
+    // FUEL PRICE CALCULATION
+    // =====================================
+
     private double getFuelRate(String fuelType) {
 
         switch (fuelType) {
+
             case "Petrol":
                 return PETROL_RATE;
 
@@ -265,7 +288,6 @@ public class BatteryHelpActivity extends AppCompatActivity {
         }
     }
 
-    // Update the quantity unit dynamically
     private void updateQuantityUnit() {
 
         if (spFuelType == null || tvFuelQuantityLabel == null) {
@@ -281,15 +303,19 @@ public class BatteryHelpActivity extends AppCompatActivity {
         String fuelType = selectedItem.toString();
 
         if ("CNG".equals(fuelType)) {
+
             tvFuelQuantityLabel.setText("Fuel Quantity (kg) *");
+
         } else if ("EV Charging".equals(fuelType)) {
+
             tvFuelQuantityLabel.setText("Charging Quantity (kWh) *");
+
         } else {
+
             tvFuelQuantityLabel.setText("Fuel Quantity (litres) *");
         }
     }
 
-    // Calculate price whenever fuel type or quantity changes
     private void updateEstimatedPrice() {
 
         if (spFuelType == null || spFuelQuantity == null
@@ -316,6 +342,7 @@ public class BatteryHelpActivity extends AppCompatActivity {
                 spFuelQuantity.getSelectedItem().toString();
 
         try {
+
             double quantity = Double.parseDouble(quantityText);
             double rate = getFuelRate(fuelType);
 
@@ -330,6 +357,7 @@ public class BatteryHelpActivity extends AppCompatActivity {
             );
 
             if (tvPriceNote != null) {
+
                 String unit;
 
                 if ("CNG".equals(fuelType)) {
@@ -360,56 +388,75 @@ public class BatteryHelpActivity extends AppCompatActivity {
         }
     }
 
+    // =====================================
+    // SUBMIT VEHICLE ASSISTANCE REQUEST
+    // =====================================
+
     private void submitRequest() {
 
         FirebaseUser user = auth.getCurrentUser();
 
         if (user == null) {
+
             tvBatteryMessage.setText(
                     "Please log in before requesting assistance."
             );
+
             return;
         }
 
         if (spVehicleType.getSelectedItemPosition() == 0) {
+
             tvBatteryMessage.setText(
                     "Please select your vehicle type."
             );
+
             return;
         }
 
         if (spBatteryIssue.getSelectedItemPosition() == 0) {
+
             tvBatteryMessage.setText(
-                    "Please select the battery issue."
+                    "Please select your vehicle issue."
             );
+
             return;
         }
 
         if (spFuelType.getSelectedItemPosition() == 0) {
+
             tvBatteryMessage.setText(
                     "Please select a fuel type."
             );
+
             return;
         }
 
         if (spFuelQuantity.getSelectedItemPosition() == 0) {
+
             tvBatteryMessage.setText(
                     "Please select the fuel quantity."
             );
+
             return;
         }
 
-        String location = etBatteryLocation.getText()
-                .toString().trim();
+        String location =
+                etBatteryLocation.getText().toString().trim();
 
         if (location.isEmpty()) {
+
             etBatteryLocation.setError("Location is required");
             etBatteryLocation.requestFocus();
+
             return;
         }
 
-        String description = etBatteryDescription.getText()
-                .toString().trim();
+        String description =
+                etBatteryDescription.getText().toString().trim();
+
+        String vehicleIssue =
+                spBatteryIssue.getSelectedItem().toString();
 
         String fuelType =
                 spFuelType.getSelectedItem().toString();
@@ -427,17 +474,18 @@ public class BatteryHelpActivity extends AppCompatActivity {
             quantityUnit = "litres";
         }
 
-        // Ensure the displayed estimate is current
         updateEstimatedPrice();
 
         Map<String, Object> request = new HashMap<>();
 
         request.put("userId", user.getUid());
+
         request.put(
                 "userEmail",
                 user.getEmail() == null ? "" : user.getEmail()
         );
 
+        // Keep existing service type for Firestore compatibility.
         request.put("serviceType", "Battery Help");
 
         request.put(
@@ -445,39 +493,39 @@ public class BatteryHelpActivity extends AppCompatActivity {
                 spVehicleType.getSelectedItem().toString()
         );
 
-        request.put(
-                "batteryIssue",
-                spBatteryIssue.getSelectedItem().toString()
-        );
+        /*
+         * Keep the existing Firestore field name.
+         * It now stores general vehicle issues, not only battery issues.
+         */
+        request.put("batteryIssue", vehicleIssue);
 
-        // Fuel information
         request.put("fuelType", fuelType);
         request.put("fuelQuantity", fuelQuantity);
         request.put("fuelQuantityUnit", quantityUnit);
 
-        // Estimated price saved as a numeric value
         request.put("estimatedPrice", estimatedPrice);
 
         request.put("location", location);
         request.put("description", description);
 
-        // Existing request status and technician fields
         request.put("status", "pending");
+
         request.put("technicianAssigned", false);
         request.put("technicianName", "");
         request.put("technicianPhone", "");
         request.put("technicianRating", "");
         request.put("technicianType", "");
 
-        // Firebase server timestamp
         request.put("createdAt", FieldValue.serverTimestamp());
 
         btnSubmitBatteryRequest.setEnabled(false);
         btnSubmitBatteryRequest.setText("Submitting...");
+
         tvBatteryMessage.setText("");
 
         db.collection("serviceRequests")
                 .add(request)
+
                 .addOnSuccessListener(documentReference -> {
 
                     Toast.makeText(
@@ -490,9 +538,14 @@ public class BatteryHelpActivity extends AppCompatActivity {
                             "Request submitted successfully!\n"
                                     + "Request ID: "
                                     + documentReference.getId()
-                                    + "\nFuel: " + fuelType
-                                    + "\nQuantity: " + fuelQuantity
-                                    + " " + quantityUnit
+                                    + "\nVehicle issue: "
+                                    + vehicleIssue
+                                    + "\nFuel: "
+                                    + fuelType
+                                    + "\nQuantity: "
+                                    + fuelQuantity
+                                    + " "
+                                    + quantityUnit
                                     + String.format(
                                     Locale.getDefault(),
                                     "\nEstimated Price: ₹%.2f",
@@ -503,6 +556,7 @@ public class BatteryHelpActivity extends AppCompatActivity {
 
                     finish();
                 })
+
                 .addOnFailureListener(e -> {
 
                     btnSubmitBatteryRequest.setEnabled(true);
@@ -515,4 +569,3 @@ public class BatteryHelpActivity extends AppCompatActivity {
                 });
     }
 }
-
