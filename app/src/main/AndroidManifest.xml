@@ -57,6 +57,17 @@
             android:name=".BatteryHelpActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".WorkerDashboardActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".WorkerSignupActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AdminDashboardActivity"
+            android:exported="false" />
+
         <!-- Towing Help -->
         <activity
             android:name=".TowingHelpActivity"
@@ -74,6 +85,14 @@
 
         <activity
             android:name=".FeedbackActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".AdminRequestActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".AdminWorkerActivity"
             android:exported="false" />
 
         <!-- Login -->

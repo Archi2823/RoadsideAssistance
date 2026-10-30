@@ -12,10 +12,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class HomeActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
+    private FirebaseFirestore db;
+
+    private TextView tvWelcome;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,9 +27,10 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         auth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
         // Initialize views
-        TextView tvWelcome = findViewById(R.id.tvWelcome);
+        tvWelcome = findViewById(R.id.tvWelcome);
 
         Button btnBatteryHelp =
                 findViewById(R.id.btnBatteryHelp);
@@ -48,7 +53,7 @@ public class HomeActivity extends AppCompatActivity {
         ImageButton btnProfile =
                 findViewById(R.id.btnProfile);
 
-        // Check whether the user is logged in
+        // Check logged-in user
         FirebaseUser user = auth.getCurrentUser();
 
         if (user == null) {
@@ -56,16 +61,8 @@ public class HomeActivity extends AppCompatActivity {
             return;
         }
 
-        // Display welcome message
-        String name = user.getDisplayName();
-
-        if (name != null && !name.trim().isEmpty()) {
-            tvWelcome.setText("Welcome, " + name + "!");
-        } else {
-            tvWelcome.setText(
-                    "Welcome to Road Side Assistance!"
-            );
-        }
+        // Load customer name from Firestore
+        loadCustomerDetails(user);
 
         // Open Profile screen
         btnProfile.setOnClickListener(v -> {
@@ -117,6 +114,7 @@ public class HomeActivity extends AppCompatActivity {
 
         // Logout
         btnLogout.setOnClickListener(v -> {
+
             auth.signOut();
 
             Toast.makeText(
@@ -129,6 +127,42 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
+    // Fetch customer details from Firestore
+    private void loadCustomerDetails(FirebaseUser user) {
+
+        String uid = user.getUid();
+
+        tvWelcome.setText("Welcome to Road Side Assistance!");
+
+        db.collection("users")
+                .document(uid)
+                .get()
+                .addOnSuccessListener(document -> {
+
+                    if (isFinishing() || isDestroyed()) return;
+
+                    if (document.exists()) {
+
+                        String name = document.getString("name");
+
+                        if (name != null && !name.trim().isEmpty()) {
+                            tvWelcome.setText("Welcome, " + name + "!");
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> {
+
+                    if (isFinishing() || isDestroyed()) return;
+
+                    Toast.makeText(
+                            HomeActivity.this,
+                            "Unable to load profile details",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                });
+    }
+
+    // Redirect to Login screen
     private void openLoginScreen() {
 
         Intent intent = new Intent(
@@ -137,8 +171,8 @@ public class HomeActivity extends AppCompatActivity {
         );
 
         intent.setFlags(
-                Intent.FLAG_ACTIVITY_NEW_TASK
-                        | Intent.FLAG_ACTIVITY_CLEAR_TASK
+                Intent.FLAG_ACTIVITY_NEW_TASK |
+                        Intent.FLAG_ACTIVITY_CLEAR_TASK
         );
 
         startActivity(intent);

@@ -188,8 +188,6 @@ public class MyRequestsActivity extends AppCompatActivity {
             requestUiBuilt = true;
         }
 
-        // Avoid registering duplicate listeners when the activity resumes or
-        // when edit/cancel operations call loadRequests().
         if (requestsListener != null) {
             return;
         }
@@ -218,7 +216,6 @@ public class MyRequestsActivity extends AppCompatActivity {
                     allRequests.clear();
                     allRequests.addAll(snapshot.getDocuments());
 
-                    // Sort newest first locally.
                     Collections.sort(allRequests, new Comparator<DocumentSnapshot>() {
                         @Override
                         public int compare(
@@ -255,9 +252,6 @@ public class MyRequestsActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    // =====================================
-    // CREATE STATUS FILTER BUTTONS
-    // =====================================
     private void createFilterButtons() {
 
         filterContainer.removeAllViews();
@@ -327,9 +321,6 @@ public class MyRequestsActivity extends AppCompatActivity {
         }
     }
 
-    // =====================================
-    // DISPLAY FILTERED REQUESTS
-    // =====================================
     private void displayFilteredRequests() {
 
         if (requestsContainer == null) {
@@ -495,10 +486,6 @@ public class MyRequestsActivity extends AppCompatActivity {
 
         requestsContainer.addView(loading);
     }
-
-    // =====================================
-    // DISPLAY REQUEST CARD
-    // =====================================
     private void showRequest(DocumentSnapshot doc) {
 
         String service = doc.getString("serviceType");
@@ -579,8 +566,6 @@ public class MyRequestsActivity extends AppCompatActivity {
 
         card.addView(details);
 
-        // Show assigned towing/technician contact details when available.
-        // ACTION_DIAL opens the phone app without requiring CALL_PHONE permission.
         String technicianName = doc.getString("technicianName");
         String technicianPhone = doc.getString("technicianPhone");
         String technicianType = doc.getString("technicianType");
@@ -639,8 +624,6 @@ public class MyRequestsActivity extends AppCompatActivity {
             }
         }
 
-        // Request Again is available for previous orders of any status.
-        // It opens the new-request form and passes the previous order details.
         Button requestAgain = new Button(this);
         requestAgain.setText("Request Again");
         requestAgain.setAllCaps(false);
@@ -677,10 +660,6 @@ public class MyRequestsActivity extends AppCompatActivity {
         }
     }
 
-
-    // =====================================
-    // CONTACT ASSIGNED TOWING SERVICE
-    // =====================================
     private void contactTowingService(String phoneNumber) {
         if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
             Toast.makeText(
@@ -699,17 +678,13 @@ public class MyRequestsActivity extends AppCompatActivity {
         );
 
         try {
-            // ACTION_DIAL does not require CALL_PHONE permission.
             if (dialIntent.resolveActivity(getPackageManager()) != null) {
                 startActivity(dialIntent);
                 return;
             }
         } catch (ActivityNotFoundException | SecurityException e) {
-            // Show the fallback below if the device cannot open a dialer.
         }
 
-        // Some emulators/tablets do not have a dialer app. Let the user copy
-        // the saved number instead of showing only an error message.
         EditText phoneInput = new EditText(this);
         phoneInput.setText(dialNumber);
         phoneInput.setSingleLine(true);
@@ -1187,9 +1162,6 @@ public class MyRequestsActivity extends AppCompatActivity {
                 .show();
     }
 
-    // =====================================
-    // FUEL PRICE HELPERS
-    // =====================================
     private double getFuelRate(String fuelType) {
         switch (fuelType) {
             case "Petrol": return 95.0;
@@ -1210,9 +1182,6 @@ public class MyRequestsActivity extends AppCompatActivity {
         return label;
     }
 
-    // =====================================
-    // HELPERS
-    // =====================================
     private void addTextTo(LinearLayout parent, String message) {
 
         TextView text = new TextView(this);
@@ -1234,3 +1203,4 @@ public class MyRequestsActivity extends AppCompatActivity {
                 .getDisplayMetrics().density + 0.5f);
     }
 }
+

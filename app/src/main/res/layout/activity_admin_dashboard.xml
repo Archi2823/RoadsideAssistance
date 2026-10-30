@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F4F7FB"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <!-- Admin Header -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ROADSIDE ASSISTANCE"
+                    android:textColor="#52749A"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvAdminName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Welcome, Admin"
+                    android:textColor="#173B6C"
+                    android:textSize="23sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Administrator Dashboard"
+                    android:textColor="#777777"
+                    android:textSize="13sp" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnLogout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Logout"
+                android:textAllCaps="false" />
+
+        </LinearLayout>
+
+        <!-- Dashboard Overview -->
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:text="Dashboard Overview"
+            android:textColor="#173B6C"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="18dp"
+            android:text="Monitor your roadside assistance operations"
+            android:textColor="#777777"
+            android:textSize="13sp" />
+
+        <!-- Statistics Row 1 -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <!-- Customers Card -->
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="125dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:background="#FFFFFF"
+                android:elevation="3dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CUSTOMERS"
+                    android:textColor="#666666"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvTotalCustomers"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="..."
+                    android:textColor="#173B6C"
+                    android:textSize="30sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <!-- Workers Card -->
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="125dp"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:background="#FFFFFF"
+                android:elevation="3dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="WORKERS"
+                    android:textColor="#666666"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvTotalWorkers"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="..."
+                    android:textColor="#16845B"
+                    android:textSize="30sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Statistics Row 2 -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal">
+
+            <!-- Pending Workers Card -->
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="125dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:background="#FFFFFF"
+                android:elevation="3dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="PENDING WORKERS"
+                    android:textColor="#666666"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvPendingWorkers"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="..."
+                    android:textColor="#D68A19"
+                    android:textSize="30sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <!-- Total Requests Card -->
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="125dp"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:background="#FFFFFF"
+                android:elevation="3dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TOTAL REQUESTS"
+                    android:textColor="#666666"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvTotalRequests"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="..."
+                    android:textColor="#7B55B5"
+                    android:textSize="30sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Management Section -->
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="15dp"
+            android:text="Management"
+            android:textColor="#173B6C"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <!-- Worker Management -->
+
+        <Button
+            android:id="@+id/btnManageWorkers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#173B6C"
+            android:padding="15dp"
+            android:text="Manage Workers / Approvals"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp" />
+
+        <!-- Request Management -->
+
+        <Button
+            android:id="@+id/btnManageRequests"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:backgroundTint="#16845B"
+            android:padding="15dp"
+            android:text="Manage Service Requests"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp" />
+
+        <!-- Footer -->
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:gravity="center"
+            android:text="Road Side Assistance | Admin Panel"
+            android:textColor="#999999"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
+</ScrollView>

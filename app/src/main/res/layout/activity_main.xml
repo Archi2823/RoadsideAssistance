@@ -25,10 +25,59 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="32dp"
+            android:layout_marginBottom="25dp"
             android:text="Login to your account"
             android:textColor="#666666"
             android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Account Type"
+            android:textColor="#173B6C"
+            android:textStyle="bold"
+            android:textSize="15sp"
+            android:layout_marginBottom="8dp" />
+
+        <RadioGroup
+            android:id="@+id/rgUserRole"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp">
+
+            <RadioButton
+                android:id="@+id/rbCustomer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Customer"
+                android:checked="true"
+                android:textColor="#173B6C"
+                android:buttonTint="#173B6C"
+                android:padding="5dp" />
+
+            <RadioButton
+                android:id="@+id/rbWorker"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Worker"
+                android:textColor="#173B6C"
+                android:buttonTint="#173B6C"
+                android:padding="5dp" />
+
+            <RadioButton
+                android:id="@+id/rbAdmin"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Admin"
+                android:textColor="#173B6C"
+                android:buttonTint="#173B6C"
+                android:padding="5dp" />
+
+        </RadioGroup>
 
         <EditText
             android:id="@+id/etEmail"
@@ -83,4 +132,5 @@
             android:focusable="true" />
 
     </LinearLayout>
+
 </ScrollView>

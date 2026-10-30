@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F4F6FA">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:background="#23416E">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Worker Management"
+            android:textSize="23sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"/>
+
+        <TextView
+            android:id="@+id/tvWorkerCount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pending Workers: 0"
+            android:textSize="15sp"
+            android:textColor="#E5ECF5"
+            android:layout_marginTop="8dp"/>
+
+    </LinearLayout>
+
+    <!-- Worker status filters -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/btnPending"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:text="Pending"
+            android:textAllCaps="false"
+            android:textSize="12sp"
+            android:backgroundTint="#D99026"
+            android:textColor="#FFFFFF"/>
+
+        <Button
+            android:id="@+id/btnApproved"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginStart="5dp"
+            android:text="Approved"
+            android:textAllCaps="false"
+            android:textSize="12sp"
+            android:backgroundTint="#238F5A"
+            android:textColor="#FFFFFF"/>
+
+        <Button
+            android:id="@+id/btnRejected"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginStart="5dp"
+            android:text="Rejected"
+            android:textAllCaps="false"
+            android:textSize="12sp"
+            android:backgroundTint="#C83737"
+            android:textColor="#FFFFFF"/>
+
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/tvEmpty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No workers found."
+        android:textSize="16sp"
+        android:textColor="#777777"
+        android:gravity="center"
+        android:padding="25dp"
+        android:visibility="gone"/>
+
+    <!-- Worker list -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:id="@+id/workersContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"/>
+
+    </ScrollView>
+
+</LinearLayout>
