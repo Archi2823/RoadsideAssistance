@@ -102,6 +102,10 @@
         <activity
             android:name=".MechanicProfileActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".MechanicHistoryActivity"
+            android:exported="false" />
         <activity
             android:name=".MyFavouriteMechanicsActivity"
             android:exported="false" />

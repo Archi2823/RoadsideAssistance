@@ -22,10 +22,13 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class AvailableMechanicsActivity extends AppCompatActivity {
@@ -44,6 +47,8 @@ public class AvailableMechanicsActivity extends AppCompatActivity {
     private final List<DocumentSnapshot> mechanicsList = new ArrayList<>();
 
     private String customerUid;
+    private boolean mechanicsLoaded = false;
+    private boolean favouritesLoaded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,20 +71,22 @@ public class AvailableMechanicsActivity extends AppCompatActivity {
 
         customerUid = user.getUid();
 
-        findViewById(R.id.btnMyFavourites).setOnClickListener(v -> {
-            startActivity(new Intent(
-                    AvailableMechanicsActivity.this,
-                    MyFavouriteMechanicsActivity.class
-            ));
-        });
+        findViewById(R.id.btnMyFavourites).setOnClickListener(v ->
+                startActivity(new Intent(
+                        AvailableMechanicsActivity.this,
+                        MyFavouriteMechanicsActivity.class)));
+
+        // Open Mechanic History
+        findViewById(R.id.btnMechanicHistory).setOnClickListener(v ->
+                startActivity(new Intent(
+                        AvailableMechanicsActivity.this,
+                        MechanicHistoryActivity.class)));
 
         loadFavourites();
         loadAvailableMechanics();
     }
 
-    // Listen to the current customer's saved favourites
     private void loadFavourites() {
-
         favouritesListener = db.collection("users")
                 .document(customerUid)
                 .collection("favoriteMechanics")
@@ -88,11 +95,9 @@ public class AvailableMechanicsActivity extends AppCompatActivity {
                     if (isFinishing() || isDestroyed()) return;
 
                     if (error != null) {
-                        Toast.makeText(
-                                this,
+                        Toast.makeText(this,
                                 "Unable to load favourites",
-                                Toast.LENGTH_SHORT
-                        ).show();
+                                Toast.LENGTH_SHORT).show();
                         return;
                     }
 
@@ -105,13 +110,12 @@ public class AvailableMechanicsActivity extends AppCompatActivity {
                         }
                     }
 
+                    favouritesLoaded = true;
                     displayMechanics();
                 });
     }
 
-    // Load approved workers from the existing users collection
     private void loadAvailableMechanics() {
-
         progressBar.setVisibility(View.VISIBLE);
         tvMessage.setVisibility(View.GONE);
 
@@ -122,19 +126,15 @@ public class AvailableMechanicsActivity extends AppCompatActivity {
 
                     if (isFinishing() || isDestroyed()) return;
 
-                    progressBar.setVisibility(View.GONE);
-
                     if (error != null) {
+                        progressBar.setVisibility(View.GONE);
                         tvMessage.setText(
-                                "Unable to load mechanics. Please try again."
-                        );
+                                "Unable to load mechanics. Please try again.");
                         tvMessage.setVisibility(View.VISIBLE);
 
-                        Toast.makeText(
-                                this,
+                        Toast.makeText(this,
                                 error.getMessage(),
-                                Toast.LENGTH_LONG
-                        ).show();
+                                Toast.LENGTH_LONG).show();
                         return;
                     }
 
@@ -144,21 +144,19 @@ public class AvailableMechanicsActivity extends AppCompatActivity {
                         mechanicsList.addAll(snapshots.getDocuments());
                     }
 
+                    mechanicsLoaded = true;
+                    progressBar.setVisibility(View.GONE);
                     displayMechanics();
                 });
     }
 
-    // Refresh cards when mechanics or favourites change
     private void displayMechanics() {
-
-        if (progressBar.getVisibility() == View.VISIBLE) return;
+        if (!mechanicsLoaded || !favouritesLoaded) return;
 
         mechanicsContainer.removeAllViews();
 
         if (mechanicsList.isEmpty()) {
-            tvMessage.setText(
-                    "No approved mechanics found currently."
-            );
+            tvMessage.setText("No approved mechanics found currently.");
             tvMessage.setVisibility(View.VISIBLE);
             return;
         }
@@ -169,25 +167,16 @@ public class AvailableMechanicsActivity extends AppCompatActivity {
 
             String uid = document.getId();
 
-            String name = getValue(
-                    document.getString("name"), "Mechanic");
-
-            String email = getValue(
-                    document.getString("email"), "Not provided");
-
-            String phone = getValue(
-                    document.getString("phone"), "Not provided");
-
+            String name = getValue(document.getString("name"), "Mechanic");
+            String email = getValue(document.getString("email"), "Not provided");
+            String phone = getValue(document.getString("phone"), "Not provided");
             String specialization = getValue(
                     document.getString("specialization"), "Not specified");
-
             String availability = getValue(
                     document.getString("availability"), "Not specified");
 
-            addMechanicCard(
-                    uid, name, email, phone,
-                    specialization, availability
-            );
+            addMechanicCard(uid, name, email, phone,
+                    specialization, availability);
         }
     }
 
@@ -221,12 +210,11 @@ public class AvailableMechanicsActivity extends AppCompatActivity {
         LinearLayout.LayoutParams cardParams =
                 new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                );
+                        LinearLayout.LayoutParams.WRAP_CONTENT);
+
         cardParams.setMargins(0, 0, 0, dp(16));
         card.setLayoutParams(cardParams);
 
-        // Name and favourite heart row
         LinearLayout nameRow = new LinearLayout(this);
         nameRow.setOrientation(LinearLayout.HORIZONTAL);
         nameRow.setGravity(Gravity.CENTER_VERTICAL);
@@ -238,8 +226,9 @@ public class AvailableMechanicsActivity extends AppCompatActivity {
         tvName.setTypeface(null, Typeface.BOLD);
 
         LinearLayout.LayoutParams nameParams =
-                new LinearLayout.LayoutParams(0,
-                        LinearLayout.LayoutParams.WRAP_CONTENT, 1);
+                new LinearLayout.LayoutParams(
+                        0, LinearLayout.LayoutParams.WRAP_CONTENT, 1);
+
         nameRow.addView(tvName, nameParams);
 
         TextView btnFavourite = new TextView(this);
@@ -255,15 +244,14 @@ public class AvailableMechanicsActivity extends AppCompatActivity {
         nameRow.addView(btnFavourite);
         card.addView(nameRow);
 
-        TextView tvSpecialization = createInfoText(
-                "Specialization: " + specialization);
-        card.addView(tvSpecialization);
+        card.addView(createInfoText(
+                "Specialization: " + specialization));
 
-        TextView tvPhone = createInfoText("Phone: " + phone);
-        card.addView(tvPhone);
+        card.addView(createInfoText("Phone: " + phone));
 
         TextView tvAvailability = createInfoText(
                 "Availability: " + availability);
+
         tvAvailability.setTypeface(null, Typeface.BOLD);
         tvAvailability.setPadding(0, dp(8), 0, dp(16));
 
@@ -277,7 +265,6 @@ public class AvailableMechanicsActivity extends AppCompatActivity {
 
         card.addView(tvAvailability);
 
-        // Action buttons
         LinearLayout buttonRow = new LinearLayout(this);
         buttonRow.setOrientation(LinearLayout.HORIZONTAL);
         buttonRow.setGravity(Gravity.CENTER_VERTICAL);
@@ -292,11 +279,9 @@ public class AvailableMechanicsActivity extends AppCompatActivity {
         buttonRow.addView(btnProfile, profileParams);
 
         btnProfile.setOnClickListener(v -> {
-
             Intent intent = new Intent(
                     AvailableMechanicsActivity.this,
-                    MechanicProfileActivity.class
-            );
+                    MechanicProfileActivity.class);
 
             intent.putExtra("mechanicUid", uid);
             intent.putExtra("mechanicName", name);
@@ -322,16 +307,36 @@ public class AvailableMechanicsActivity extends AppCompatActivity {
             btnCall.setAlpha(0.5f);
         } else {
             btnCall.setOnClickListener(v -> {
+                recordContacted(uid);
+
                 Intent intent = new Intent(
                         Intent.ACTION_DIAL,
-                        Uri.parse("tel:" + Uri.encode(phone))
-                );
+                        Uri.parse("tel:" + Uri.encode(phone)));
+
                 startActivity(intent);
             });
         }
 
         card.addView(buttonRow);
         mechanicsContainer.addView(card);
+    }
+
+    private void recordContacted(String mechanicUid) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("mechanicUid", mechanicUid);
+        data.put("contactedAt", FieldValue.serverTimestamp());
+        data.put("callCount", FieldValue.increment(1));
+
+        db.collection("users")
+                .document(customerUid)
+                .collection("contactedMechanics")
+                .document(mechanicUid)
+                .set(data, SetOptions.merge())
+                .addOnFailureListener(e ->
+                        Toast.makeText(this,
+                                "Could not update contact history: "
+                                        + e.getMessage(),
+                                Toast.LENGTH_LONG).show());
     }
 
     private TextView createInfoText(String text) {
@@ -350,27 +355,24 @@ public class AvailableMechanicsActivity extends AppCompatActivity {
         button.setTextColor(Color.WHITE);
         button.setTypeface(null, Typeface.BOLD);
         button.setGravity(Gravity.CENTER);
+        button.setPadding(dp(5), 0, dp(5), 0);
 
         GradientDrawable background = new GradientDrawable();
         background.setColor(color);
         background.setCornerRadius(dp(8));
 
         button.setBackground(background);
-        button.setPadding(dp(5), 0, dp(5), 0);
         return button;
     }
 
     private void updateFavouriteIcon(TextView button, boolean isFavourite) {
         button.setText(isFavourite ? "♥" : "♡");
         button.setTextColor(
-                isFavourite ? Color.rgb(220, 53, 69) : Color.GRAY
-        );
+                isFavourite ? Color.rgb(220, 53, 69) : Color.GRAY);
         button.setContentDescription(
-                isFavourite ? "Remove from favourites" : "Save as favourite"
-        );
+                isFavourite ? "Remove from favourites" : "Save as favourite");
     }
 
-    // Save or remove favourite in the current customer's subcollection
     private void toggleFavourite(String mechanicUid, TextView button) {
 
         if (customerUid == null) return;
@@ -385,39 +387,31 @@ public class AvailableMechanicsActivity extends AppCompatActivity {
 
             favouriteRef.delete()
                     .addOnSuccessListener(unused ->
-                            Toast.makeText(
-                                    this,
+                            Toast.makeText(this,
                                     "Removed from favourites",
-                                    Toast.LENGTH_SHORT
-                            ).show())
+                                    Toast.LENGTH_SHORT).show())
                     .addOnFailureListener(e ->
-                            Toast.makeText(
-                                    this,
-                                    "Unable to remove favourite: " + e.getMessage(),
-                                    Toast.LENGTH_LONG
-                            ).show());
+                            Toast.makeText(this,
+                                    "Unable to remove favourite: "
+                                            + e.getMessage(),
+                                    Toast.LENGTH_LONG).show());
 
         } else {
 
-            java.util.Map<String, Object> data =
-                    new java.util.HashMap<>();
-
+            Map<String, Object> data = new HashMap<>();
             data.put("mechanicUid", mechanicUid);
             data.put("savedAt", FieldValue.serverTimestamp());
 
             favouriteRef.set(data)
                     .addOnSuccessListener(unused ->
-                            Toast.makeText(
-                                    this,
+                            Toast.makeText(this,
                                     "Mechanic added to favourites",
-                                    Toast.LENGTH_SHORT
-                            ).show())
+                                    Toast.LENGTH_SHORT).show())
                     .addOnFailureListener(e ->
-                            Toast.makeText(
-                                    this,
-                                    "Unable to save favourite: " + e.getMessage(),
-                                    Toast.LENGTH_LONG
-                            ).show());
+                            Toast.makeText(this,
+                                    "Unable to save favourite: "
+                                            + e.getMessage(),
+                                    Toast.LENGTH_LONG).show());
         }
     }
 
@@ -428,10 +422,8 @@ public class AvailableMechanicsActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-
         if (mechanicsListener != null) mechanicsListener.remove();
         if (favouritesListener != null) favouritesListener.remove();
-
         super.onDestroy();
     }
 }
