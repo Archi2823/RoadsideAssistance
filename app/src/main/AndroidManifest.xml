@@ -102,9 +102,8 @@
         <activity
             android:name=".MechanicProfileActivity"
             android:exported="false" />
-
         <activity
-            android:name=".AvailableMechanicsActivity"
+            android:name=".MyFavouriteMechanicsActivity"
             android:exported="false" />
         <!-- Login -->
         <activity
