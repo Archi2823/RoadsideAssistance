@@ -19,7 +19,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.firestore.Query;
 
 public class AvailableMechanicsActivity extends AppCompatActivity {
 
@@ -45,7 +44,7 @@ public class AvailableMechanicsActivity extends AppCompatActivity {
         loadAvailableMechanics();
     }
 
-    // Load approved workers from Firestore
+    // Load approved workers from the existing users collection
     private void loadAvailableMechanics() {
 
         progressBar.setVisibility(View.VISIBLE);
@@ -68,11 +67,10 @@ public class AvailableMechanicsActivity extends AppCompatActivity {
                         tvMessage.setText(
                                 "Unable to load mechanics. Please try again."
                         );
-
                         tvMessage.setVisibility(View.VISIBLE);
 
                         Toast.makeText(
-                                this,
+                                AvailableMechanicsActivity.this,
                                 error.getMessage(),
                                 Toast.LENGTH_LONG
                         ).show();
@@ -85,7 +83,6 @@ public class AvailableMechanicsActivity extends AppCompatActivity {
                         tvMessage.setText(
                                 "No approved mechanics found currently."
                         );
-
                         tvMessage.setVisibility(View.VISIBLE);
                         return;
                     }
@@ -94,33 +91,28 @@ public class AvailableMechanicsActivity extends AppCompatActivity {
 
                     for (DocumentSnapshot document : snapshots.getDocuments()) {
 
+                        String uid = document.getId();
+
                         String name = document.getString("name");
+                        String email = document.getString("email");
                         String phone = document.getString("phone");
                         String specialization =
                                 document.getString("specialization");
                         String availability =
                                 document.getString("availability");
 
-                        if (name == null || name.trim().isEmpty()) {
-                            name = "Mechanic";
-                        }
-
-                        if (phone == null || phone.trim().isEmpty()) {
-                            phone = "Not provided";
-                        }
-
-                        if (specialization == null ||
-                                specialization.trim().isEmpty()) {
-                            specialization = "Not specified";
-                        }
-
-                        if (availability == null ||
-                                availability.trim().isEmpty()) {
-                            availability = "Not specified";
-                        }
+                        name = getValue(name, "Mechanic");
+                        email = getValue(email, "Not provided");
+                        phone = getValue(phone, "Not provided");
+                        specialization =
+                                getValue(specialization, "Not specified");
+                        availability =
+                                getValue(availability, "Not specified");
 
                         addMechanicCard(
+                                uid,
                                 name,
+                                email,
                                 phone,
                                 specialization,
                                 availability
@@ -129,9 +121,20 @@ public class AvailableMechanicsActivity extends AppCompatActivity {
                 });
     }
 
-    // Create mechanic card dynamically
+    private String getValue(String value, String defaultValue) {
+
+        if (value == null || value.trim().isEmpty()) {
+            return defaultValue;
+        }
+
+        return value.trim();
+    }
+
+    // Create mechanic card
     private void addMechanicCard(
+            String uid,
             String name,
+            String email,
             String phone,
             String specialization,
             String availability) {
@@ -178,7 +181,7 @@ public class AvailableMechanicsActivity extends AppCompatActivity {
 
         card.addView(tvSpecialization);
 
-        // Phone number
+        // Phone
         TextView tvPhone = new TextView(this);
         tvPhone.setText("Phone: " + phone);
         tvPhone.setTextSize(14);
@@ -192,7 +195,7 @@ public class AvailableMechanicsActivity extends AppCompatActivity {
         tvAvailability.setText("Availability: " + availability);
         tvAvailability.setTextSize(14);
         tvAvailability.setTypeface(null, Typeface.BOLD);
-        tvAvailability.setPadding(0, dp(8), 0, dp(14));
+        tvAvailability.setPadding(0, dp(8), 0, dp(16));
 
         if (availability.equalsIgnoreCase("available")) {
             tvAvailability.setTextColor(Color.rgb(22, 134, 91));
@@ -204,19 +207,59 @@ public class AvailableMechanicsActivity extends AppCompatActivity {
 
         card.addView(tvAvailability);
 
-        // Call button
-        TextView btnCall = new TextView(this);
-        btnCall.setText("Call Mechanic");
-        btnCall.setTextSize(15);
-        btnCall.setTextColor(Color.WHITE);
-        btnCall.setGravity(Gravity.CENTER);
-        btnCall.setPadding(0, dp(12), 0, dp(12));
+        // Buttons row
+        LinearLayout buttonRow = new LinearLayout(this);
+        buttonRow.setOrientation(LinearLayout.HORIZONTAL);
+        buttonRow.setGravity(Gravity.CENTER_VERTICAL);
 
-        GradientDrawable buttonBackground = new GradientDrawable();
-        buttonBackground.setColor(Color.rgb(23, 105, 170));
-        buttonBackground.setCornerRadius(dp(8));
+        // View Profile button
+        TextView btnProfile = createActionButton(
+                "View Profile",
+                Color.rgb(23, 105, 170)
+        );
 
-        btnCall.setBackground(buttonBackground);
+        LinearLayout.LayoutParams profileParams =
+                new LinearLayout.LayoutParams(
+                        0,
+                        dp(46),
+                        1
+                );
+
+        profileParams.setMarginEnd(dp(8));
+        buttonRow.addView(btnProfile, profileParams);
+
+        btnProfile.setOnClickListener(v -> {
+
+            Intent intent = new Intent(
+                    AvailableMechanicsActivity.this,
+                    MechanicProfileActivity.class
+            );
+
+            intent.putExtra("mechanicUid", uid);
+            intent.putExtra("mechanicName", name);
+            intent.putExtra("mechanicEmail", email);
+            intent.putExtra("mechanicPhone", phone);
+            intent.putExtra("mechanicSpecialization", specialization);
+            intent.putExtra("mechanicAvailability", availability);
+
+            startActivity(intent);
+        });
+
+        // Call Directly button
+        TextView btnCall = createActionButton(
+                "Call Directly",
+                Color.rgb(22, 134, 91)
+        );
+
+        LinearLayout.LayoutParams callParams =
+                new LinearLayout.LayoutParams(
+                        0,
+                        dp(46),
+                        1
+                );
+
+        callParams.setMarginStart(dp(8));
+        buttonRow.addView(btnCall, callParams);
 
         if (phone.equals("Not provided")) {
 
@@ -229,16 +272,37 @@ public class AvailableMechanicsActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(
                         Intent.ACTION_DIAL,
-                        Uri.parse("tel:" + phone)
+                        Uri.parse("tel:" + Uri.encode(phone))
                 );
 
                 startActivity(intent);
             });
         }
 
-        card.addView(btnCall);
+        card.addView(buttonRow);
 
         mechanicsContainer.addView(card);
+    }
+
+    // Create styled action button
+    private TextView createActionButton(String text, int color) {
+
+        TextView button = new TextView(this);
+
+        button.setText(text);
+        button.setTextSize(14);
+        button.setTextColor(Color.WHITE);
+        button.setTypeface(null, Typeface.BOLD);
+        button.setGravity(Gravity.CENTER);
+
+        GradientDrawable background = new GradientDrawable();
+        background.setColor(color);
+        background.setCornerRadius(dp(8));
+
+        button.setBackground(background);
+        button.setPadding(dp(5), 0, dp(5), 0);
+
+        return button;
     }
 
     private int dp(int value) {

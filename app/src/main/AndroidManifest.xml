@@ -98,6 +98,14 @@
         <activity
             android:name=".AvailableMechanicsActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".MechanicProfileActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".AvailableMechanicsActivity"
+            android:exported="false" />
         <!-- Login -->
         <activity
             android:name=".MainActivity"
