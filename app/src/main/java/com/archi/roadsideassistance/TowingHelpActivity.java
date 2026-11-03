@@ -29,6 +29,9 @@ public class TowingHelpActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private FirebaseFirestore db;
 
+    private static final String SERVICE_CATEGORY =
+            "Towing Assistance";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,12 +40,20 @@ public class TowingHelpActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-        spTowingVehicleType = findViewById(R.id.spTowingVehicleType);
-        spTowingIssue = findViewById(R.id.spTowingIssue);
+        spTowingVehicleType =
+                findViewById(R.id.spTowingVehicleType);
 
-        etPickupLocation = findViewById(R.id.etPickupLocation);
-        etDestination = findViewById(R.id.etTowingDestination);
-        etTowingDetails = findViewById(R.id.etTowingDetails);
+        spTowingIssue =
+                findViewById(R.id.spTowingIssue);
+
+        etPickupLocation =
+                findViewById(R.id.etPickupLocation);
+
+        etDestination =
+                findViewById(R.id.etTowingDestination);
+
+        etTowingDetails =
+                findViewById(R.id.etTowingDetails);
 
         btnSubmitTowingRequest =
                 findViewById(R.id.btnSubmitTowingRequest);
@@ -56,6 +67,10 @@ public class TowingHelpActivity extends AppCompatActivity {
                 v -> submitTowingRequest()
         );
     }
+
+    // =====================================
+    // SPINNER SETUP
+    // =====================================
 
     private void setupSpinners() {
 
@@ -103,16 +118,22 @@ public class TowingHelpActivity extends AppCompatActivity {
         spTowingIssue.setAdapter(issueAdapter);
     }
 
+    // =====================================
+    // SUBMIT TOWING REQUEST
+    // =====================================
+
     private void submitTowingRequest() {
 
         FirebaseUser user = auth.getCurrentUser();
 
         if (user == null) {
+
             Toast.makeText(
                     this,
                     "Please log in before requesting towing help.",
                     Toast.LENGTH_LONG
             ).show();
+
             return;
         }
 
@@ -131,72 +152,156 @@ public class TowingHelpActivity extends AppCompatActivity {
         String details =
                 etTowingDetails.getText().toString().trim();
 
+        // Validate pickup location
         if (TextUtils.isEmpty(pickupLocation)) {
+
             etPickupLocation.setError(
                     "Please enter the pickup location"
             );
+
             etPickupLocation.requestFocus();
             return;
         }
 
         if (pickupLocation.length() < 5) {
+
             etPickupLocation.setError(
                     "Enter a more specific pickup location"
             );
+
             etPickupLocation.requestFocus();
             return;
         }
 
+        // Validate optional destination
         if (!TextUtils.isEmpty(destination)
                 && destination.length() < 3) {
+
             etDestination.setError(
                     "Enter a valid destination or leave it blank"
             );
+
             etDestination.requestFocus();
             return;
         }
 
+        // =====================================
+        // CREATE REQUEST DATA
+        // =====================================
+
         Map<String, Object> request = new HashMap<>();
 
         request.put("userId", user.getUid());
+
         request.put(
                 "userEmail",
                 user.getEmail() == null ? "" : user.getEmail()
         );
 
         request.put("serviceType", "Towing Help");
+
+        request.put("serviceCategory", SERVICE_CATEGORY);
+
         request.put("vehicleType", vehicleType);
+
         request.put("towingIssue", towingIssue);
+
         request.put("location", pickupLocation);
+
         request.put("destination", destination);
+
         request.put("description", details);
 
         // Initial request status
         request.put("status", "pending");
 
-        // Assignment fields before simulated assignment
+        // Initial assignment details
         request.put("technicianAssigned", false);
+
         request.put("technicianName", "");
+
         request.put("technicianPhone", "");
+
         request.put("technicianRating", "");
+
         request.put("technicianType", "");
 
         request.put("createdAt", FieldValue.serverTimestamp());
 
+        // =====================================
+        // SAVE REQUEST
+        // =====================================
+
         btnSubmitTowingRequest.setEnabled(false);
+
         btnSubmitTowingRequest.setText("Submitting...");
 
         db.collection("serviceRequests")
                 .add(request)
                 .addOnSuccessListener(documentReference -> {
 
-                    // Request is saved. Now simulate assignment.
-                    simulateAssignment(documentReference.getId());
+                    String requestId = documentReference.getId();
 
+                    Toast.makeText(
+                            TowingHelpActivity.this,
+                            "Towing request submitted. Finding an available worker...",
+                            Toast.LENGTH_SHORT
+                    ).show();
+
+                    // =====================================
+                    // AUTOMATIC WORKER ASSIGNMENT
+                    // =====================================
+
+                    WorkerAssignmentHelper.assignRequest(
+                            requestId,
+                            SERVICE_CATEGORY,
+                            user.getUid(),
+                            new WorkerAssignmentHelper.AssignmentCallback() {
+
+                                @Override
+                                public void onSuccess(String workerName) {
+
+                                    Toast.makeText(
+                                            TowingHelpActivity.this,
+                                            "Towing worker assigned: " + workerName,
+                                            Toast.LENGTH_LONG
+                                    ).show();
+
+                                    finish();
+                                }
+
+                                @Override
+                                public void onNoWorkerAvailable() {
+
+                                    Toast.makeText(
+                                            TowingHelpActivity.this,
+                                            "Request saved successfully. No approved towing worker is currently available. Your request remains pending.",
+                                            Toast.LENGTH_LONG
+                                    ).show();
+
+                                    finish();
+                                }
+
+                                @Override
+                                public void onFailure(String message) {
+
+                                    Toast.makeText(
+                                            TowingHelpActivity.this,
+                                            "Request saved, but automatic assignment failed: "
+                                                    + message
+                                                    + ". Your request remains pending.",
+                                            Toast.LENGTH_LONG
+                                    ).show();
+
+                                    finish();
+                                }
+                            }
+                    );
                 })
                 .addOnFailureListener(e -> {
 
                     btnSubmitTowingRequest.setEnabled(true);
+
                     btnSubmitTowingRequest.setText(
                             "Submit Towing Request"
                     );
@@ -204,53 +309,6 @@ public class TowingHelpActivity extends AppCompatActivity {
                     Toast.makeText(
                             TowingHelpActivity.this,
                             "Request failed: " + e.getLocalizedMessage(),
-                            Toast.LENGTH_LONG
-                    ).show();
-                });
-    }
-
-    private void simulateAssignment(String requestId) {
-
-        Map<String, Object> assignment = new HashMap<>();
-
-        // Demo provider, not a verified real business
-        assignment.put(
-                "technicianName",
-                "Towing Point 1 (Demo)"
-        );
-
-        assignment.put("technicianPhone", "");
-        assignment.put("technicianRating", "");
-        assignment.put("technicianType", "Towing Service");
-
-        assignment.put("technicianAssigned", true);
-        assignment.put("status", "assigned");
-        assignment.put("assignedAt", FieldValue.serverTimestamp());
-
-        db.collection("serviceRequests")
-                .document(requestId)
-                .update(assignment)
-                .addOnSuccessListener(unused -> {
-
-                    Toast.makeText(
-                            TowingHelpActivity.this,
-                            "Towing request saved and demo service assigned!",
-                            Toast.LENGTH_LONG
-                    ).show();
-
-                    finish();
-                })
-                .addOnFailureListener(e -> {
-
-                    btnSubmitTowingRequest.setEnabled(true);
-                    btnSubmitTowingRequest.setText(
-                            "Submit Towing Request"
-                    );
-
-                    Toast.makeText(
-                            TowingHelpActivity.this,
-                            "Request was saved, but assignment failed: "
-                                    + e.getLocalizedMessage(),
                             Toast.LENGTH_LONG
                     ).show();
                 });

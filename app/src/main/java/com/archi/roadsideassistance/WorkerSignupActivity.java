@@ -1,12 +1,13 @@
-
 package com.archi.roadsideassistance;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Patterns;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,6 +17,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.WriteBatch;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,11 +26,24 @@ public class WorkerSignupActivity extends AppCompatActivity {
 
     private EditText etName, etEmail, etPhone;
     private EditText etPassword, etConfirmPassword;
+
+    private Spinner spWorkerCategory;
+
     private Button btnSignup;
     private TextView tvLogin;
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
+
+    private final String[] workerCategories = {
+            "Select Service Category",
+            "Mechanical Assistance",
+            "Battery Assistance",
+            "Tyre Assistance",
+            "Towing Assistance",
+            "Fuel Assistance",
+            "EV Assistance"
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,14 +59,31 @@ public class WorkerSignupActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.etPassword);
         etConfirmPassword = findViewById(R.id.etConfirmPassword);
 
+        spWorkerCategory = findViewById(R.id.spWorkerCategory);
+
         btnSignup = findViewById(R.id.btnSignup);
         tvLogin = findViewById(R.id.tvLogin);
 
+        setupCategorySpinner();
+
         btnSignup.setOnClickListener(v -> registerWorker());
 
-        tvLogin.setOnClickListener(v -> {
-            finish();
-        });
+        tvLogin.setOnClickListener(v -> finish());
+    }
+
+    private void setupCategorySpinner() {
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                workerCategories
+        );
+
+        adapter.setDropDownViewResource(
+                android.R.layout.simple_spinner_dropdown_item
+        );
+
+        spWorkerCategory.setAdapter(adapter);
     }
 
     private void registerWorker() {
@@ -59,11 +91,13 @@ public class WorkerSignupActivity extends AppCompatActivity {
         String name = etName.getText().toString().trim();
         String email = etEmail.getText().toString().trim();
         String phone = etPhone.getText().toString().trim();
-        String password = etPassword.getText().toString();
-        String confirmPassword =
-                etConfirmPassword.getText().toString();
 
-        // Name validation
+        String password = etPassword.getText().toString();
+        String confirmPassword = etConfirmPassword.getText().toString();
+
+        String workerCategory =
+                spWorkerCategory.getSelectedItem().toString();
+
         if (TextUtils.isEmpty(name)) {
             etName.setError("Please enter your full name");
             etName.requestFocus();
@@ -76,7 +110,6 @@ public class WorkerSignupActivity extends AppCompatActivity {
             return;
         }
 
-        // Email validation
         if (TextUtils.isEmpty(email)) {
             etEmail.setError("Please enter your email");
             etEmail.requestFocus();
@@ -89,14 +122,21 @@ public class WorkerSignupActivity extends AppCompatActivity {
             return;
         }
 
-        // Phone validation
         if (!phone.matches("^[6-9][0-9]{9}$")) {
             etPhone.setError("Enter a valid 10-digit Indian mobile number");
             etPhone.requestFocus();
             return;
         }
 
-        // Password validation
+        if (spWorkerCategory.getSelectedItemPosition() == 0) {
+            Toast.makeText(
+                    this,
+                    "Please select your service category",
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
         if (TextUtils.isEmpty(password)) {
             etPassword.setError("Please enter your password");
             etPassword.requestFocus();
@@ -130,20 +170,18 @@ public class WorkerSignupActivity extends AppCompatActivity {
 
                     if (task.isSuccessful()) {
 
-                        FirebaseUser firebaseUser =
-                                auth.getCurrentUser();
+                        FirebaseUser firebaseUser = auth.getCurrentUser();
 
                         if (firebaseUser != null) {
                             saveWorkerProfile(
                                     firebaseUser,
                                     name,
                                     email,
-                                    phone
+                                    phone,
+                                    workerCategory
                             );
                         } else {
-                            signupFailed(
-                                    "Unable to create worker profile."
-                            );
+                            signupFailed("Unable to create worker profile.");
                         }
 
                     } else {
@@ -161,7 +199,8 @@ public class WorkerSignupActivity extends AppCompatActivity {
             FirebaseUser user,
             String name,
             String email,
-            String phone
+            String phone,
+            String workerCategory
     ) {
 
         String uid = user.getUid();
@@ -174,11 +213,32 @@ public class WorkerSignupActivity extends AppCompatActivity {
         worker.put("phone", phone);
         worker.put("role", "worker");
         worker.put("approvalStatus", "pending");
+
+        // Selected service category
+        worker.put("serviceCategory", workerCategory);
+
         worker.put("createdAt", FieldValue.serverTimestamp());
 
-        db.collection("users")
-                .document(uid)
-                .set(worker)
+        // Initial workload counter for this worker
+        Map<String, Object> workerStats = new HashMap<>();
+
+        workerStats.put("uid", uid);
+        workerStats.put("activeRequestCount", 0);
+        workerStats.put("updatedAt", FieldValue.serverTimestamp());
+
+        WriteBatch batch = db.batch();
+
+        batch.set(
+                db.collection("users").document(uid),
+                worker
+        );
+
+        batch.set(
+                db.collection("workerStats").document(uid),
+                workerStats
+        );
+
+        batch.commit()
                 .addOnSuccessListener(unused -> {
 
                     Toast.makeText(
@@ -204,14 +264,12 @@ public class WorkerSignupActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> {
 
-                    // Remove the newly created Auth account if
-                    // its Firestore profile could not be saved.
                     user.delete().addOnCompleteListener(deleteTask -> {
                         auth.signOut();
 
                         signupFailed(
                                 "Unable to save worker profile: "
-                                        + e.getMessage()
+                                        + e.getLocalizedMessage()
                         );
                     });
                 });

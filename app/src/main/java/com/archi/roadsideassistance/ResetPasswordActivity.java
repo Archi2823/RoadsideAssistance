@@ -11,15 +11,14 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 public class ResetPasswordActivity extends AppCompatActivity {
 
-    private EditText etEmail, etOldPassword;
-    private EditText etNewPassword, etConfirmPassword;
+    private EditText etEmail;
     private Button btnResetPassword;
 
     private FirebaseAuth auth;
+    private boolean resetInProgress = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,119 +28,62 @@ public class ResetPasswordActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
 
         etEmail = findViewById(R.id.etResetEmail);
-        etOldPassword = findViewById(R.id.etOldPassword);
-        etNewPassword = findViewById(R.id.etNewPassword);
-        etConfirmPassword = findViewById(R.id.etConfirmPassword);
         btnResetPassword = findViewById(R.id.btnResetPassword);
 
-        btnResetPassword.setOnClickListener(v -> resetPassword());
+        btnResetPassword.setOnClickListener(v -> sendResetEmail());
     }
 
-    private void resetPassword() {
-        String email = etEmail.getText().toString().trim();
-        String oldPassword = etOldPassword.getText().toString();
-        String newPassword = etNewPassword.getText().toString();
-        String confirmPassword = etConfirmPassword.getText().toString();
+    private void sendResetEmail() {
 
-        if (TextUtils.isEmpty(email)
-                || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            etEmail.setError("Enter a valid registered email");
+        if (resetInProgress) {
+            return;
+        }
+
+        String email = etEmail.getText().toString().trim();
+
+        if (TextUtils.isEmpty(email)) {
+            etEmail.setError("Please enter your registered email");
             etEmail.requestFocus();
             return;
         }
 
-        if (TextUtils.isEmpty(oldPassword)) {
-            etOldPassword.setError("Enter your old password");
-            etOldPassword.requestFocus();
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            etEmail.setError("Enter a valid email address");
+            etEmail.requestFocus();
             return;
         }
 
-        if (newPassword.length() < 6) {
-            etNewPassword.setError(
-                    "Password must be at least 6 characters"
-            );
-            etNewPassword.requestFocus();
-            return;
-        }
-
-        if (newPassword.equals(oldPassword)) {
-            etNewPassword.setError(
-                    "New password must be different from old password"
-            );
-            etNewPassword.requestFocus();
-            return;
-        }
-
-        if (!newPassword.equals(confirmPassword)) {
-            etConfirmPassword.setError("Passwords do not match");
-            etConfirmPassword.requestFocus();
-            return;
-        }
+        resetInProgress = true;
 
         btnResetPassword.setEnabled(false);
-        btnResetPassword.setText("Verifying...");
+        btnResetPassword.setText("Sending email...");
 
-        // Verify the registered email and old password
-        auth.signInWithEmailAndPassword(email, oldPassword)
-                .addOnCompleteListener(this, loginTask -> {
+        auth.sendPasswordResetEmail(email)
+                .addOnCompleteListener(task -> {
 
-                    if (!loginTask.isSuccessful()) {
-                        btnResetPassword.setEnabled(true);
-                        btnResetPassword.setText("Reset Password");
+                    resetInProgress = false;
 
-                        Toast.makeText(
-                                ResetPasswordActivity.this,
-                                "Incorrect email or old password.",
-                                Toast.LENGTH_LONG
-                        ).show();
-                        return;
-                    }
+                    btnResetPassword.setEnabled(true);
+                    btnResetPassword.setText("Send Reset Link");
 
-                    FirebaseUser user = auth.getCurrentUser();
-
-                    if (user == null) {
-                        btnResetPassword.setEnabled(true);
-                        btnResetPassword.setText("Reset Password");
+                    if (task.isSuccessful()) {
 
                         Toast.makeText(
                                 ResetPasswordActivity.this,
-                                "Unable to verify your account.",
+                                "If an account exists for this email, a password reset link has been sent. Please check your inbox and spam folder.",
                                 Toast.LENGTH_LONG
                         ).show();
-                        return;
+
+                        finish();
+
+                    } else {
+
+                        Toast.makeText(
+                                ResetPasswordActivity.this,
+                                "Unable to send reset email. Please check your internet connection and try again.",
+                                Toast.LENGTH_LONG
+                        ).show();
                     }
-
-                    btnResetPassword.setText("Updating...");
-
-                    // Update the password after successful verification
-                    user.updatePassword(newPassword)
-                            .addOnCompleteListener(updateTask -> {
-
-                                btnResetPassword.setEnabled(true);
-                                btnResetPassword.setText("Reset Password");
-
-                                if (updateTask.isSuccessful()) {
-
-                                    // Return to login so the new password
-                                    // can be used for the next login.
-                                    auth.signOut();
-
-                                    Toast.makeText(
-                                            ResetPasswordActivity.this,
-                                            "Password reset successful. Please log in with your new password.",
-                                            Toast.LENGTH_LONG
-                                    ).show();
-
-                                    finish();
-
-                                } else {
-                                    Toast.makeText(
-                                            ResetPasswordActivity.this,
-                                            "Password update failed. Please try again.",
-                                            Toast.LENGTH_LONG
-                                    ).show();
-                                }
-                            });
                 });
     }
 }

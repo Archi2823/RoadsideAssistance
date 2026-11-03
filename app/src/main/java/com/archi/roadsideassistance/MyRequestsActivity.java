@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -646,7 +647,11 @@ public class MyRequestsActivity extends AppCompatActivity {
 
         } else if (resolved) {
 
+            // Existing general service feedback remains unchanged.
             checkFeedbackStatus(doc, card);
+
+            // Separate mechanic rating/review is available only after resolution.
+            checkMechanicReviewStatus(doc, card);
 
         } else {
 
@@ -878,6 +883,167 @@ public class MyRequestsActivity extends AppCompatActivity {
                     message.setPadding(0, dp(8), 0, 0);
                     card.addView(message);
                 });
+    }
+
+    // =====================================
+    // CHECK MECHANIC REVIEW STATUS
+    // =====================================
+    private void checkMechanicReviewStatus(
+            DocumentSnapshot requestDoc,
+            LinearLayout card
+    ) {
+        String requestId = requestDoc.getId();
+        String mechanicUid = requestDoc.getString("assignedWorkerId");
+
+        // A mechanic review requires an assigned worker UID.
+        if (mechanicUid == null || mechanicUid.trim().isEmpty()) {
+            TextView note = new TextView(this);
+            note.setText("Mechanic review is unavailable because no worker was assigned to this request.");
+            note.setTextSize(12);
+            note.setTextColor(Color.rgb(120, 80, 40));
+            note.setPadding(0, dp(8), 0, 0);
+            card.addView(note);
+            return;
+        }
+
+        db.collection("mechanicReviews")
+                .document(requestId)
+                .get()
+                .addOnSuccessListener(reviewDoc -> {
+                    if (isFinishing() || isDestroyed()) return;
+
+                    Button reviewButton = new Button(this);
+                    reviewButton.setAllCaps(false);
+
+                    if (reviewDoc.exists()) {
+                        reviewButton.setText("Mechanic Review Submitted");
+                        reviewButton.setEnabled(false);
+                    } else {
+                        reviewButton.setText("Rate Mechanic");
+                        reviewButton.setOnClickListener(v ->
+                                showMechanicReviewDialog(requestDoc, mechanicUid)
+                        );
+                    }
+
+                    card.addView(reviewButton);
+                })
+                .addOnFailureListener(e -> {
+                    if (isFinishing() || isDestroyed()) return;
+
+                    TextView message = new TextView(this);
+                    message.setText("Unable to check mechanic review status. Please try again.");
+                    message.setTextSize(12);
+                    message.setTextColor(Color.rgb(150, 60, 45));
+                    message.setPadding(0, dp(8), 0, 0);
+                    card.addView(message);
+                });
+    }
+
+    // =====================================
+    // MECHANIC REVIEW DIALOG
+    // =====================================
+    private void showMechanicReviewDialog(
+            DocumentSnapshot requestDoc,
+            String mechanicUid
+    ) {
+        if (requestDoc == null || mechanicUid == null || mechanicUid.trim().isEmpty()) {
+            Toast.makeText(this, "Mechanic information is unavailable.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        LinearLayout form = new LinearLayout(this);
+        form.setOrientation(LinearLayout.VERTICAL);
+        form.setPadding(dp(24), dp(8), dp(24), 0);
+
+        TextView ratingLabel = new TextView(this);
+        ratingLabel.setText("Rate your mechanic (1 to 5 stars)");
+        ratingLabel.setTextSize(15);
+        ratingLabel.setTypeface(null, Typeface.BOLD);
+        ratingLabel.setTextColor(Color.rgb(35, 55, 85));
+        form.addView(ratingLabel);
+
+        RatingBar ratingBar = new RatingBar(this);
+        ratingBar.setNumStars(5);
+        ratingBar.setStepSize(1.0f);
+        ratingBar.setRating(5.0f);
+        form.addView(ratingBar);
+
+        EditText reviewInput = new EditText(this);
+        reviewInput.setHint("Write your experience with this mechanic (optional)");
+        reviewInput.setMinLines(3);
+        reviewInput.setGravity(android.view.Gravity.TOP | android.view.Gravity.START);
+        reviewInput.setInputType(
+                android.text.InputType.TYPE_CLASS_TEXT
+                        | android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE
+        );
+        form.addView(reviewInput);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Rate Mechanic")
+                .setView(form)
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton("Submit Review", null)
+                .create();
+
+        dialog.setOnShowListener(ignored -> dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                .setOnClickListener(v -> {
+                    int rating = Math.round(ratingBar.getRating());
+                    String reviewText = reviewInput.getText().toString().trim();
+
+                    if (rating < 1 || rating > 5) {
+                        Toast.makeText(this, "Please select a star rating.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (reviewText.length() > 2000) {
+                        reviewInput.setError("Review must be 2000 characters or less.");
+                        return;
+                    }
+
+                    String customerUid = FirebaseAuth.getInstance().getCurrentUser() == null
+                            ? null
+                            : FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+                    if (customerUid == null) {
+                        Toast.makeText(this, "Please log in again.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    Map<String, Object> reviewData = new HashMap<>();
+                    reviewData.put("mechanicUid", mechanicUid);
+                    reviewData.put("customerUid", customerUid);
+                    reviewData.put("requestId", requestDoc.getId());
+                    reviewData.put("rating", rating);
+                    reviewData.put("review", reviewText);
+                    reviewData.put("createdAt", com.google.firebase.firestore.FieldValue.serverTimestamp());
+
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+
+                    db.collection("mechanicReviews")
+                            .document(requestDoc.getId())
+                            .set(reviewData)
+                            .addOnSuccessListener(unused -> {
+                                if (isFinishing() || isDestroyed()) return;
+                                dialog.dismiss();
+                                Toast.makeText(
+                                        MyRequestsActivity.this,
+                                        "Mechanic review submitted successfully.",
+                                        Toast.LENGTH_LONG
+                                ).show();
+                                displayFilteredRequests();
+                            })
+                            .addOnFailureListener(e -> {
+                                if (isFinishing() || isDestroyed()) return;
+                                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                                Toast.makeText(
+                                        MyRequestsActivity.this,
+                                        "Could not submit review: " + e.getMessage(),
+                                        Toast.LENGTH_LONG
+                                ).show();
+                            });
+                }));
+
+        dialog.show();
     }
 
     // =====================================

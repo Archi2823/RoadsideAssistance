@@ -60,7 +60,25 @@
             android:maxLength="10"
             android:autofillHints="phone"
             android:padding="16dp"
-            android:layout_marginBottom="14dp" />
+            android:layout_marginBottom="18dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Your Service Category"
+            android:textColor="#173B6C"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <Spinner
+            android:id="@+id/spWorkerCategory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="52dp"
+            android:padding="10dp"
+            android:background="@android:drawable/btn_dropdown"
+            android:layout_marginBottom="18dp" />
 
         <EditText
             android:id="@+id/etPassword"
@@ -103,5 +121,4 @@
             android:focusable="true" />
 
     </LinearLayout>
-
 </ScrollView>
