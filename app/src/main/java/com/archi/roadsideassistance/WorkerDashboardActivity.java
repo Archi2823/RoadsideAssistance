@@ -553,7 +553,6 @@ public class WorkerDashboardActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();

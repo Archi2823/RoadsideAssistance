@@ -33,7 +33,6 @@ public class BatteryHelpActivity extends AppCompatActivity {
     private TextView tvFuelQuantityLabel;
     private TextView tvEstimatedPrice;
     private TextView tvPriceNote;
-
     private Button btnSubmitBatteryRequest;
 
     private FirebaseAuth auth;
