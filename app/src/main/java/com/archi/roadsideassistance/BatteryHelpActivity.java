@@ -36,7 +36,6 @@ public class BatteryHelpActivity extends AppCompatActivity {
     private Button btnSubmitBatteryRequest;
     private LinearLayout tireSpecialistsContainer;
     private TextView tvTireSpecialistsMessage;
-
     private FirebaseAuth auth;
     private FirebaseFirestore db;
 
@@ -102,7 +101,6 @@ public class BatteryHelpActivity extends AppCompatActivity {
                 tireSpecialistsContainer.setVisibility(View.GONE);
             }
         });
-
         AdapterView.OnItemSelectedListener fuelListener = new AdapterView.OnItemSelectedListener() {
             @Override public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 updateQuantityUnit();

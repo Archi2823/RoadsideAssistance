@@ -46,7 +46,6 @@ public class MyRequestsActivity extends AppCompatActivity {
     private LinearLayout container;
     private LinearLayout requestsContainer;
     private LinearLayout filterContainer;
-
     private FirebaseFirestore db;
     private String uid;
     private ListenerRegistration requestsListener;
@@ -57,7 +56,6 @@ public class MyRequestsActivity extends AppCompatActivity {
     private Long selectedDateStartMillis = null;
     private Long selectedDateEndMillis = null;
     private TextView selectedDateLabel;
-
     private final String[] filters = {
             "All", "Pending", "Assigned", "In Progress", "Resolved", "Cancelled"
     };
