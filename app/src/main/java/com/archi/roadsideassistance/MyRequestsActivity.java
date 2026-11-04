@@ -55,6 +55,7 @@ public class MyRequestsActivity extends AppCompatActivity {
     private String selectedFilter = "All";
     private Long selectedDateStartMillis = null;
     private Long selectedDateEndMillis = null;
+
     private TextView selectedDateLabel;
     private final String[] filters = {
             "All", "Pending", "Assigned", "In Progress", "Resolved", "Cancelled"
