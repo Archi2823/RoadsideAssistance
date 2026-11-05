@@ -9,6 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:gravity="center_horizontal"
         android:padding="24dp">
 
         <TextView
@@ -26,7 +27,29 @@
             android:text="View and update your personal details"
             android:textColor="#68778D"
             android:textSize="14sp"
-            android:layout_marginBottom="28dp" />
+            android:layout_marginBottom="18dp" />
+
+        <ImageView
+            android:id="@+id/ivProfilePhoto"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/profile_photo_bg"
+            android:clipToOutline="true"
+            android:contentDescription="Profile photo"
+            android:padding="12dp"
+            android:scaleType="centerCrop"
+            android:src="@android:drawable/ic_menu_camera" />
+
+        <Button
+            android:id="@+id/btnChangePhoto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:text="Change Photo"
+            android:textAllCaps="false"
+            android:backgroundTint="#2457C5" />
 
         <TextView
             android:layout_width="match_parent"
@@ -88,7 +111,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Save Changes"
-            android:textAllCaps="false" />
+            android:textAllCaps="false"
+            android:backgroundTint="#2457C5" />
 
         <Button
             android:id="@+id/btnBackHome"
@@ -106,6 +130,5 @@
             android:gravity="center"
             android:textColor="#C62828"
             android:textSize="14sp" />
-
     </LinearLayout>
 </ScrollView>
