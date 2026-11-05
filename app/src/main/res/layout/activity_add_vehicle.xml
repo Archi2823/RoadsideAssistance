@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F7FA"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:id="@+id/tvVehicleFormTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add Vehicle"
+            android:textColor="#172B4D"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="24dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Vehicle Model"
+            android:textColor="#344563"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/etVehicleModel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="20dp"
+            android:hint="Example: Swift Dzire"
+            android:inputType="textCapWords"
+            android:padding="14dp"
+            android:background="@drawable/signup_input_bg" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Vehicle Registration Number"
+            android:textColor="#344563"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/etVehicleNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="20dp"
+            android:hint="Example: GJ01AB1234"
+            android:inputType="textCapCharacters"
+            android:maxLength="15"
+            android:padding="14dp"
+            android:background="@drawable/signup_input_bg" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Vehicle Type"
+            android:textColor="#344563"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/spVehicleType"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="28dp"
+            android:background="@drawable/signup_input_bg"
+            android:padding="10dp" />
+
+        <Button
+            android:id="@+id/btnSaveVehicle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Save Vehicle"
+            android:textAllCaps="false"
+            android:backgroundTint="#2457C5"
+            android:textColor="#FFFFFF" />
+
+    </LinearLayout>
+</ScrollView>

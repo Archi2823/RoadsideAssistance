@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F5F7FA"
+    android:padding="20dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="My Vehicles"
+        android:textColor="#172B4D"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Manage the vehicles registered to your account"
+        android:textColor="#68778D"
+        android:textSize="14sp"
+        android:layout_marginBottom="18dp" />
+
+    <Button
+        android:id="@+id/btnAddVehicle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="+ Add Vehicle"
+        android:textAllCaps="false"
+        android:backgroundTint="#2457C5"
+        android:textColor="#FFFFFF" />
+
+    <TextView
+        android:id="@+id/tvEmptyVehicles"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:gravity="center"
+        android:text="No vehicles added yet. Tap Add Vehicle to register your first vehicle."
+        android:textColor="#68778D"
+        android:textSize="15sp"
+        android:visibility="gone" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="18dp">
+
+        <LinearLayout
+            android:id="@+id/vehicleContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
+
+</LinearLayout>

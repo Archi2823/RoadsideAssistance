@@ -104,6 +104,13 @@
             android:exported="false" />
 
         <activity
+            android:name=".MyVehiclesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AddVehicleActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".MechanicHistoryActivity"
             android:exported="false" />
         <activity
