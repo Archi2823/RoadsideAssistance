@@ -1,15 +1,20 @@
-
 package com.archi.roadsideassistance;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.view.View;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.Spinner;
+import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.LinearLayout;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -30,6 +35,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -45,6 +53,17 @@ public class ProfileActivity extends AppCompatActivity {
     private Button btnMyVehicles;
 
     private TextView tvProfileMessage;
+    private Spinner spDefaultVehicle;
+    private LinearLayout preferredServiceTypesContainer;
+    private TextView tvDefaultVehicleMessage;
+    private final List<String> serviceTypes = Arrays.asList(
+            "Mechanical Assistance", "Battery Assistance",
+            "Tyre Assistance", "Towing Assistance",
+            "Fuel Assistance", "EV Assistance");
+    private final List<String> selectedServiceTypes = new ArrayList<>();
+    private final List<String> vehicleDocumentIds = new ArrayList<>();
+    private String selectedDefaultVehicleId = "";
+    private boolean loadingVehicleSpinner = false;
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
@@ -75,6 +94,9 @@ public class ProfileActivity extends AppCompatActivity {
         etProfilePhone = findViewById(R.id.etProfilePhone);
 
         tvProfileMessage = findViewById(R.id.tvProfileMessage);
+        spDefaultVehicle = findViewById(R.id.spDefaultVehicle);
+        preferredServiceTypesContainer = findViewById(R.id.preferredServiceTypesContainer);
+        tvDefaultVehicleMessage = findViewById(R.id.tvDefaultVehicleMessage);
 
         // Check logged-in user
         if (currentUser == null) {
@@ -101,6 +123,7 @@ public class ProfileActivity extends AppCompatActivity {
         );
 
         loadProfile();
+        loadVehiclesAndPreferences();
         displaySavedPhoto();
 
         // Change profile photo
@@ -334,6 +357,80 @@ public class ProfileActivity extends AppCompatActivity {
                 });
     }
 
+    private void loadVehiclesAndPreferences() {
+        String uid = currentUser.getUid();
+        db.collection("users").document(uid).get().addOnSuccessListener(userDoc -> {
+            selectedDefaultVehicleId = userDoc.getString("defaultVehicleId");
+            if (selectedDefaultVehicleId == null) selectedDefaultVehicleId = "";
+            List<String> saved = (List<String>) userDoc.get("preferredServiceTypes");
+            selectedServiceTypes.clear();
+            if (saved != null) selectedServiceTypes.addAll(saved);
+            buildServiceTypeCheckboxes();
+            loadVehicleChoices();
+        }).addOnFailureListener(e -> {
+            tvDefaultVehicleMessage.setText("Could not load saved preferences.");
+            Log.e(TAG, "Preference read failed", e);
+        });
+    }
+
+    private void loadVehicleChoices() {
+        db.collection("vehicles").whereEqualTo("userId", currentUser.getUid()).get()
+                .addOnSuccessListener(snapshot -> {
+                    List<String> labels = new ArrayList<>();
+                    vehicleDocumentIds.clear();
+                    labels.add("No default vehicle");
+                    vehicleDocumentIds.add("");
+                    for (com.google.firebase.firestore.QueryDocumentSnapshot doc : snapshot) {
+                        String model = doc.getString("model");
+                        String number = doc.getString("vehicleNumber");
+                        String type = doc.getString("vehicleType");
+                        labels.add((model == null ? "Vehicle" : model) + "  •  "
+                                + (number == null ? "" : number) + "  ("
+                                + (type == null ? "Other" : type) + ")");
+                        vehicleDocumentIds.add(doc.getId());
+                    }
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                            android.R.layout.simple_spinner_item, labels);
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    loadingVehicleSpinner = true;
+                    spDefaultVehicle.setAdapter(adapter);
+                    int index = vehicleDocumentIds.indexOf(selectedDefaultVehicleId);
+                    spDefaultVehicle.setSelection(index < 0 ? 0 : index);
+                    loadingVehicleSpinner = false;
+                    if (snapshot.isEmpty()) tvDefaultVehicleMessage.setText(
+                            "Add a vehicle in My Vehicles to set a default.");
+                    else tvDefaultVehicleMessage.setText(
+                            "This vehicle will be selected automatically in supported request forms.");
+                    spDefaultVehicle.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            if (!loadingVehicleSpinner && position >= 0 && position < vehicleDocumentIds.size())
+                                selectedDefaultVehicleId = vehicleDocumentIds.get(position);
+                        }
+                        @Override public void onNothingSelected(AdapterView<?> parent) { }
+                    });
+                }).addOnFailureListener(e -> {
+                    tvDefaultVehicleMessage.setText("Unable to load saved vehicles.");
+                    Log.e(TAG, "Vehicle list failed", e);
+                });
+    }
+
+    private void buildServiceTypeCheckboxes() {
+        preferredServiceTypesContainer.removeAllViews();
+        for (String type : serviceTypes) {
+            CheckBox checkBox = new CheckBox(this);
+            checkBox.setText(type);
+            checkBox.setTextColor(0xFF344563);
+            checkBox.setTextSize(15);
+            checkBox.setButtonTintList(android.content.res.ColorStateList.valueOf(0xFF2457C5));
+            checkBox.setChecked(selectedServiceTypes.contains(type));
+            checkBox.setOnCheckedChangeListener((button, checked) -> {
+                if (checked && !selectedServiceTypes.contains(type)) selectedServiceTypes.add(type);
+                else if (!checked) selectedServiceTypes.remove(type);
+            });
+            preferredServiceTypesContainer.addView(checkBox);
+        }
+    }
+
     // Save profile details
     private void saveProfile() {
 
@@ -407,6 +504,8 @@ public class ProfileActivity extends AppCompatActivity {
 
         updates.put("name", name);
         updates.put("phone", phone);
+        updates.put("defaultVehicleId", selectedDefaultVehicleId == null ? "" : selectedDefaultVehicleId);
+        updates.put("preferredServiceTypes", new ArrayList<>(selectedServiceTypes));
 
         db.collection("users")
                 .document(uid)

@@ -1,3 +1,4 @@
+
 package com.archi.roadsideassistance;
 
 import android.content.Intent;
@@ -20,16 +21,17 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class MyVehiclesActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
+
     private LinearLayout vehicleContainer;
     private TextView tvEmptyVehicles;
     private Button btnAddVehicle;
+
     private String currentUid;
 
     private static class VehicleItem {
@@ -41,6 +43,7 @@ public class MyVehiclesActivity extends AppCompatActivity {
 
         VehicleItem(String documentId, String model, String number,
                     String type, long createdAt) {
+
             this.documentId = documentId;
             this.model = model;
             this.number = number;
@@ -62,10 +65,12 @@ public class MyVehiclesActivity extends AppCompatActivity {
         btnAddVehicle = findViewById(R.id.btnAddVehicle);
 
         FirebaseUser user = auth.getCurrentUser();
+
         if (user == null) {
             openLoginScreen();
             return;
         }
+
         currentUid = user.getUid();
 
         btnAddVehicle.setOnClickListener(v -> {
@@ -76,6 +81,7 @@ public class MyVehiclesActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
         if (auth != null && auth.getCurrentUser() != null) {
             currentUid = auth.getCurrentUser().getUid();
             loadVehicles();
@@ -83,6 +89,7 @@ public class MyVehiclesActivity extends AppCompatActivity {
     }
 
     private void loadVehicles() {
+
         tvEmptyVehicles.setVisibility(View.GONE);
         vehicleContainer.removeAllViews();
 
@@ -90,11 +97,13 @@ public class MyVehiclesActivity extends AppCompatActivity {
                 .whereEqualTo("userId", currentUid)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
+
                     vehicleContainer.removeAllViews();
 
                     List<VehicleItem> vehicles = new ArrayList<>();
 
                     for (QueryDocumentSnapshot document : querySnapshot) {
+
                         String model = document.getString("model");
                         String number = document.getString("vehicleNumber");
                         String type = document.getString("vehicleType");
@@ -124,24 +133,31 @@ public class MyVehiclesActivity extends AppCompatActivity {
                     }
                 })
                 .addOnFailureListener(e -> {
+
                     Toast.makeText(this,
                             "Unable to load vehicles: " + e.getLocalizedMessage(),
                             Toast.LENGTH_LONG).show();
+
                     tvEmptyVehicles.setVisibility(View.VISIBLE);
-                    tvEmptyVehicles.setText("Could not load vehicles. Please try again.");
+                    tvEmptyVehicles.setText(
+                            "Could not load vehicles. Please try again."
+                    );
                 });
     }
 
     private void addVehicleCard(VehicleItem vehicle) {
+
         LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.VERTICAL);
         card.setPadding(dp(16), dp(14), dp(16), dp(14));
         card.setBackgroundResource(R.drawable.signup_input_bg);
 
-        LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-        );
+        LinearLayout.LayoutParams cardParams =
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+
         cardParams.setMargins(0, 0, 0, dp(14));
         card.setLayoutParams(cardParams);
 
@@ -170,12 +186,34 @@ public class MyVehiclesActivity extends AppCompatActivity {
         Button btnEdit = new Button(this);
         btnEdit.setText("Edit");
         btnEdit.setAllCaps(false);
+
         btnEdit.setOnClickListener(v -> {
-            Intent intent = new Intent(this, AddVehicleActivity.class);
-            intent.putExtra(AddVehicleActivity.EXTRA_DOCUMENT_ID, vehicle.documentId);
-            intent.putExtra(AddVehicleActivity.EXTRA_MODEL, vehicle.model);
-            intent.putExtra(AddVehicleActivity.EXTRA_NUMBER, vehicle.number);
-            intent.putExtra(AddVehicleActivity.EXTRA_TYPE, vehicle.type);
+
+            Intent intent = new Intent(
+                    this,
+                    AddVehicleActivity.class
+            );
+
+            intent.putExtra(
+                    AddVehicleActivity.EXTRA_DOCUMENT_ID,
+                    vehicle.documentId
+            );
+
+            intent.putExtra(
+                    AddVehicleActivity.EXTRA_MODEL,
+                    vehicle.model
+            );
+
+            intent.putExtra(
+                    AddVehicleActivity.EXTRA_NUMBER,
+                    vehicle.number
+            );
+
+            intent.putExtra(
+                    AddVehicleActivity.EXTRA_TYPE,
+                    vehicle.type
+            );
+
             startActivity(intent);
         });
 
@@ -183,6 +221,7 @@ public class MyVehiclesActivity extends AppCompatActivity {
         btnDelete.setText("Delete");
         btnDelete.setAllCaps(false);
         btnDelete.setTextColor(0xFFC62828);
+
         btnDelete.setOnClickListener(v -> confirmDelete(vehicle));
 
         actions.addView(btnEdit);
@@ -197,38 +236,117 @@ public class MyVehiclesActivity extends AppCompatActivity {
     }
 
     private void confirmDelete(VehicleItem vehicle) {
+
         new AlertDialog.Builder(this)
                 .setTitle("Delete Vehicle")
                 .setMessage("Are you sure you want to delete "
                         + vehicle.model + " (" + vehicle.number + ")?")
-                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
-                .setPositiveButton("Delete", (dialog, which) ->
-                        deleteVehicle(vehicle.documentId))
+                .setNegativeButton("Cancel",
+                        (dialog, which) -> dialog.dismiss())
+                .setPositiveButton("Delete",
+                        (dialog, which) -> deleteVehicle(vehicle.documentId))
                 .show();
     }
 
     private void deleteVehicle(String documentId) {
+
         db.collection("vehicles")
                 .document(documentId)
                 .delete()
                 .addOnSuccessListener(unused -> {
-                    Toast.makeText(this, "Vehicle deleted successfully.",
-                            Toast.LENGTH_SHORT).show();
+
+                    clearDefaultVehicleIfSelected(documentId);
+
+                    Toast.makeText(
+                            this,
+                            "Vehicle deleted successfully.",
+                            Toast.LENGTH_SHORT
+                    ).show();
+
                     loadVehicles();
                 })
-                .addOnFailureListener(e -> Toast.makeText(this,
-                        "Delete failed: " + e.getLocalizedMessage(),
-                        Toast.LENGTH_LONG).show());
+                .addOnFailureListener(e -> {
+
+                    Toast.makeText(
+                            this,
+                            "Delete failed: " + e.getLocalizedMessage(),
+                            Toast.LENGTH_LONG
+                    ).show();
+                });
+    }
+
+    /**
+     * If the deleted vehicle was selected as the user's default vehicle,
+     * clear defaultVehicleId in the user's Firestore document.
+     */
+    private void clearDefaultVehicleIfSelected(String deletedVehicleId) {
+
+        if (currentUid == null || currentUid.isEmpty()) {
+            return;
+        }
+
+        db.collection("users")
+                .document(currentUid)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+
+                    if (!documentSnapshot.exists()) {
+                        return;
+                    }
+
+                    String defaultVehicleId =
+                            documentSnapshot.getString("defaultVehicleId");
+
+                    if (deletedVehicleId.equals(defaultVehicleId)) {
+
+                        db.collection("users")
+                                .document(currentUid)
+                                .update("defaultVehicleId", "")
+                                .addOnSuccessListener(unused -> {
+
+                                    Toast.makeText(
+                                            this,
+                                            "Default vehicle has been cleared.",
+                                            Toast.LENGTH_SHORT
+                                    ).show();
+                                })
+                                .addOnFailureListener(e -> {
+
+                                    Toast.makeText(
+                                            this,
+                                            "Vehicle deleted, but default vehicle could not be cleared: "
+                                                    + e.getLocalizedMessage(),
+                                            Toast.LENGTH_LONG
+                                    ).show();
+                                });
+                    }
+                })
+                .addOnFailureListener(e -> {
+
+                    Toast.makeText(
+                            this,
+                            "Could not check default vehicle: "
+                                    + e.getLocalizedMessage(),
+                            Toast.LENGTH_LONG
+                    ).show();
+                });
     }
 
     private int dp(int value) {
-        return (int) (value * getResources().getDisplayMetrics().density + 0.5f);
+        return (int) (
+                value * getResources().getDisplayMetrics().density + 0.5f
+        );
     }
 
     private void openLoginScreen() {
+
         Intent intent = new Intent(this, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+        intent.setFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_CLEAR_TASK
+        );
+
         startActivity(intent);
         finish();
     }

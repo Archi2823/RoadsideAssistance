@@ -29,8 +29,6 @@
             android:textSize="14sp"
             android:layout_marginBottom="18dp" />
 
-        <!-- Profile Photo -->
-
         <ImageView
             android:id="@+id/ivProfilePhoto"
             android:layout_width="120dp"
@@ -53,8 +51,6 @@
             android:textAllCaps="false"
             android:backgroundTint="#2457C5" />
 
-        <!-- Full Name -->
-
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -73,8 +69,6 @@
             android:padding="14dp"
             android:background="@drawable/signup_input_bg" />
 
-        <!-- Email -->
-
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -92,8 +86,6 @@
             android:inputType="textEmailAddress"
             android:padding="14dp"
             android:background="@drawable/signup_input_bg" />
-
-        <!-- Phone Number -->
 
         <TextView
             android:layout_width="match_parent"
@@ -114,7 +106,64 @@
             android:padding="14dp"
             android:background="@drawable/signup_input_bg" />
 
-        <!-- Save Profile -->
+        <Button
+            android:id="@+id/btnMyVehicles"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="18dp"
+            android:text="My Vehicles"
+            android:textAllCaps="false"
+            android:backgroundTint="#344563" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Default Vehicle"
+            android:textColor="#172B4D"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/spDefaultVehicle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="4dp"
+            android:background="@drawable/signup_input_bg"
+            android:padding="10dp" />
+
+        <TextView
+            android:id="@+id/tvDefaultVehicleMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#68778D"
+            android:textSize="12sp"
+            android:layout_marginBottom="20dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Preferred Service Types"
+            android:textColor="#172B4D"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select the services you usually need."
+            android:textColor="#68778D"
+            android:textSize="13sp"
+            android:layout_marginTop="4dp" />
+
+        <LinearLayout
+            android:id="@+id/preferredServiceTypesContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="20dp" />
 
         <Button
             android:id="@+id/btnSaveProfile"
@@ -124,20 +173,6 @@
             android:textAllCaps="false"
             android:backgroundTint="#2457C5" />
 
-        <!-- My Vehicles -->
-
-        <Button
-            android:id="@+id/btnMyVehicles"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="My Vehicles"
-            android:textAllCaps="false"
-            android:backgroundTint="#173B6C"
-            android:textColor="#FFFFFF" />
-
-        <!-- Back to Home -->
-
         <Button
             android:id="@+id/btnBackHome"
             android:layout_width="match_parent"
@@ -145,8 +180,6 @@
             android:layout_marginTop="10dp"
             android:text="Back to Home"
             android:textAllCaps="false" />
-
-        <!-- Message -->
 
         <TextView
             android:id="@+id/tvProfileMessage"
@@ -156,6 +189,5 @@
             android:gravity="center"
             android:textColor="#C62828"
             android:textSize="14sp" />
-
     </LinearLayout>
 </ScrollView>

@@ -115,6 +115,9 @@ public class BatteryHelpActivity extends AppCompatActivity {
 
         btnSubmitBatteryRequest.setOnClickListener(v -> submitRequest());
         applyRequestAgainPrefill();
+        if (!getIntent().getBooleanExtra("prefillRequestAgain", false)) {
+            loadDefaultVehicleType();
+        }
         updateQuantityUnit();
         updateEstimatedPrice();
     }
@@ -124,6 +127,26 @@ public class BatteryHelpActivity extends AppCompatActivity {
                 android.R.layout.simple_spinner_item, options);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+    }
+
+    private void loadDefaultVehicleType() {
+        FirebaseUser user = auth.getCurrentUser();
+        if (user == null) return;
+        db.collection("users").document(user.getUid()).get()
+                .addOnSuccessListener(profile -> {
+                    String vehicleId = profile.getString("defaultVehicleId");
+                    if (vehicleId == null || vehicleId.trim().isEmpty()) return;
+                    db.collection("vehicles").document(vehicleId).get()
+                            .addOnSuccessListener(vehicle -> {
+                                if (!vehicle.exists() || !user.getUid().equals(vehicle.getString("userId"))) return;
+                                String type = vehicle.getString("vehicleType");
+                                if (type == null) return;
+                                if ("Scooter".equalsIgnoreCase(type)) type = "Bike";
+                                selectSpinnerValue(spVehicleType, type);
+                            })
+                            .addOnFailureListener(e -> android.util.Log.e("BATTERY_HELP", "Default vehicle read failed", e));
+                })
+                .addOnFailureListener(e -> android.util.Log.e("BATTERY_HELP", "Default profile read failed", e));
     }
 
     private void applyRequestAgainPrefill() {
