@@ -10,144 +10,352 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:gravity="center_horizontal"
-        android:padding="24dp">
+        android:padding="20dp">
 
-        <!-- Profile Icon -->
-        <FrameLayout
+        <!-- Header -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ROAD SIDE ASSISTANCE"
+                    android:textColor="#173B6C"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.04" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:text="Your roadside support partner"
+                    android:textColor="#718096"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
 
             <ImageButton
                 android:id="@+id/btnProfile"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_gravity="end"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:background="@drawable/bg_dashboard_card"
                 android:contentDescription="My Profile"
-                android:padding="8dp"
+                android:padding="10dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_profile"
                 app:tint="#173B6C" />
 
-        </FrameLayout>
+        </LinearLayout>
 
-        <!-- App Title -->
+        <!-- Welcome Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="26dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvWelcome"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Welcome!"
+                android:textColor="#142D4E"
+                android:textSize="27sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Manage your roadside assistance services easily."
+                android:textColor="#718096"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <!-- Statistics Heading -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Usage Overview"
+                android:textColor="#173B6C"
+                android:textSize="19sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="YOUR ACTIVITY"
+                android:textColor="#8292A8"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <!-- Statistics Row 1 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:orientation="horizontal">
+
+            <!-- Total Requests -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="116dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="7dp"
+                android:background="@drawable/bg_stat_blue"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TOTAL REQUESTS"
+                    android:textColor="#5475B0"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvTotalRequests"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="--"
+                    android:textColor="#173B6C"
+                    android:textSize="29sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <!-- Battery Requests -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="116dp"
+                android:layout_weight="1"
+                android:layout_marginStart="7dp"
+                android:background="@drawable/bg_stat_green"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="BATTERY HELP"
+                    android:textColor="#47866C"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvBatteryRequests"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="--"
+                    android:textColor="#176B4D"
+                    android:textSize="29sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Statistics Row 2 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:orientation="horizontal">
+
+            <!-- Towing Requests -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="116dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="7dp"
+                android:background="@drawable/bg_stat_purple"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TOWING HELP"
+                    android:textColor="#8067A9"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvTowingRequests"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="--"
+                    android:textColor="#60418D"
+                    android:textSize="29sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <!-- Last Used -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="116dp"
+                android:layout_weight="1"
+                android:layout_marginStart="7dp"
+                android:background="@drawable/bg_stat_orange"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="LAST REQUEST"
+                    android:textColor="#A97842"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvLastUsed"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Loading..."
+                    android:textColor="#87521E"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Quick Services Heading -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:gravity="center"
-            android:text="🚘 Road Side Assistance"
+            android:layout_marginTop="30dp"
+            android:text="Quick Services"
             android:textColor="#173B6C"
-            android:textSize="25sp"
+            android:textSize="19sp"
             android:textStyle="bold" />
 
-        <!-- Welcome Message -->
-        <TextView
-            android:id="@+id/tvWelcome"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:gravity="center"
-            android:text="Welcome!"
-            android:textColor="#10243A"
-            android:textSize="30sp"
-            android:textStyle="bold" />
-
-        <!-- Login Status -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="24dp"
-            android:gravity="center"
-            android:text="You are successfully logged in."
-            android:textColor="#64748B"
-            android:textSize="16sp" />
+            android:layout_marginTop="5dp"
+            android:text="Choose the assistance you need"
+            android:textColor="#718096"
+            android:textSize="13sp" />
 
         <!-- Battery Help -->
         <Button
             android:id="@+id/btnBatteryHelp"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginTop="8dp"
+            android:layout_height="54dp"
+            android:layout_marginTop="16dp"
             android:backgroundTint="#2457C5"
             android:text="Request Battery Help"
             android:textAllCaps="false"
             android:textColor="#FFFFFF"
-            android:textSize="16sp" />
+            android:textSize="15sp"
+            android:textStyle="bold" />
 
         <!-- Towing Help -->
         <Button
             android:id="@+id/btnTowingHelp"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginTop="12dp"
+            android:layout_height="54dp"
+            android:layout_marginTop="11dp"
             android:backgroundTint="#2457C5"
-            android:text="Towing Help"
+            android:text="Request Towing Help"
             android:textAllCaps="false"
             android:textColor="#FFFFFF"
-            android:textSize="16sp" />
+            android:textSize="15sp"
+            android:textStyle="bold" />
 
-
+        <!-- Available Mechanics -->
         <Button
             android:id="@+id/btnAvailableMechanics"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="54dp"
+            android:layout_marginTop="11dp"
+            android:backgroundTint="#FFFFFF"
             android:text="Available Mechanics"
-            android:layout_marginTop="12dp" />
+            android:textAllCaps="false"
+            android:textColor="#173B6C"
+            android:textSize="15sp" />
 
-
-        <!-- Nearby Garages and Towing Map -->
+        <!-- Nearby Garages -->
         <Button
             android:id="@+id/btnGarageTowingMap"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginTop="12dp"
+            android:layout_height="54dp"
+            android:layout_marginTop="11dp"
             android:backgroundTint="#173B6C"
             android:text="Nearby Garages &amp; Towing"
             android:textAllCaps="false"
             android:textColor="#FFFFFF"
-            android:textSize="16sp" />
+            android:textSize="15sp"
+            android:textStyle="bold" />
 
         <!-- My Requests -->
         <Button
             android:id="@+id/btnMyRequests"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginTop="16dp"
-            android:backgroundTint="#2457C5"
+            android:layout_height="54dp"
+            android:layout_marginTop="22dp"
+            android:backgroundTint="#FFFFFF"
             android:text="My Requests"
             android:textAllCaps="false"
-            android:textColor="#FFFFFF"
-            android:textSize="16sp" />
+            android:textColor="#2457C5"
+            android:textSize="15sp"
+            android:textStyle="bold" />
 
         <!-- Change Password -->
         <Button
             android:id="@+id/btnChangePassword"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginTop="16dp"
-            android:backgroundTint="#6750A4"
+            android:layout_height="54dp"
+            android:layout_marginTop="11dp"
+            android:backgroundTint="#FFFFFF"
             android:text="Change Password"
             android:textAllCaps="false"
-            android:textColor="#FFFFFF"
-            android:textSize="16sp" />
+            android:textColor="#60418D"
+            android:textSize="15sp" />
 
         <!-- Logout -->
         <Button
             android:id="@+id/btnLogout"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            android:backgroundTint="#6750A4"
+            android:layout_height="54dp"
+            android:layout_marginTop="11dp"
+            android:layout_marginBottom="20dp"
+            android:backgroundTint="#FCEBEC"
             android:text="Logout"
             android:textAllCaps="false"
-            android:textColor="#FFFFFF"
-            android:textSize="16sp" />
+            android:textColor="#B8323C"
+            android:textSize="15sp"
+            android:textStyle="bold" />
 
     </LinearLayout>
 
