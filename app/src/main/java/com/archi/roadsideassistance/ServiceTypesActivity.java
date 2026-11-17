@@ -1,6 +1,7 @@
 
 package com.archi.roadsideassistance;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -24,10 +25,8 @@ public class ServiceTypesActivity extends AppCompatActivity {
         cardGeneralService = findViewById(R.id.cardGeneralService);
         cardAnnualService = findViewById(R.id.cardAnnualService);
         cardInspection = findViewById(R.id.cardInspection);
-
         btnBack = findViewById(R.id.btnBack);
 
-        // General Service
         cardGeneralService.setOnClickListener(v ->
                 showServiceDetails(
                         "General Service",
@@ -37,7 +36,6 @@ public class ServiceTypesActivity extends AppCompatActivity {
                 )
         );
 
-        // Annual Service
         cardAnnualService.setOnClickListener(v ->
                 showServiceDetails(
                         "Annual Service",
@@ -47,17 +45,15 @@ public class ServiceTypesActivity extends AppCompatActivity {
                 )
         );
 
-        // Vehicle Inspection
         cardInspection.setOnClickListener(v ->
                 showServiceDetails(
-                        "Vehicle Inspection",
+                        "Inspection",
                         "Vehicle inspection helps check the overall condition " +
                                 "of your vehicle, including tyres, brakes, lights, battery " +
                                 "and other important safety components."
                 )
         );
 
-        // Back to previous screen
         btnBack.setOnClickListener(v -> finish());
     }
 
@@ -66,7 +62,21 @@ public class ServiceTypesActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle(title)
                 .setMessage(description)
-                .setPositiveButton("Got it", (dialog, which) -> dialog.dismiss())
+                .setNegativeButton("Close", (dialog, which) ->
+                        dialog.dismiss())
+                .setPositiveButton("Book Now", (dialog, which) ->
+                        openBookingScreen(title))
                 .show();
+    }
+
+    private void openBookingScreen(String serviceType) {
+
+        Intent intent = new Intent(
+                ServiceTypesActivity.this,
+                ServiceBookingActivity.class
+        );
+
+        intent.putExtra("serviceType", serviceType);
+        startActivity(intent);
     }
 }

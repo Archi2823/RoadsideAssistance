@@ -62,6 +62,11 @@
             android:exported="false" />
 
         <activity
+            android:name=".ServiceBookingActivity"
+            android:exported="false" />
+
+
+        <activity
             android:name=".WorkerDashboardActivity"
             android:exported="false" />
 
