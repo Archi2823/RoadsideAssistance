@@ -58,6 +58,10 @@
             android:exported="false" />
 
         <activity
+            android:name=".ServiceTypesActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".WorkerDashboardActivity"
             android:exported="false" />
 

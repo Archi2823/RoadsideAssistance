@@ -51,6 +51,7 @@ public class HomeActivity extends AppCompatActivity {
         tvLastUsed = findViewById(R.id.tvLastUsed);
 
         // Buttons
+        Button btnBrowseServices = findViewById(R.id.btnBrowseServices);
         Button btnBatteryHelp = findViewById(R.id.btnBatteryHelp);
         Button btnTowingHelp = findViewById(R.id.btnTowingHelp);
         Button btnGarageTowingMap = findViewById(R.id.btnGarageTowingMap);
@@ -66,6 +67,14 @@ public class HomeActivity extends AppCompatActivity {
             openLoginScreen();
             return;
         }
+
+        // Browse available service types
+        btnBrowseServices.setOnClickListener(v ->
+                startActivity(new Intent(
+                        HomeActivity.this,
+                        ServiceTypesActivity.class
+                ))
+        );
 
         // Profile navigation
         btnProfile.setOnClickListener(v ->

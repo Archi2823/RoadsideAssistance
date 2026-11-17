@@ -83,6 +83,19 @@
 
         </LinearLayout>
 
+        <!-- Browse Available Services -->
+        <Button
+            android:id="@+id/btnBrowseServices"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginTop="18dp"
+            android:backgroundTint="#173B6C"
+            android:text="Browse Available Services"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
         <!-- Statistics Heading -->
         <LinearLayout
             android:layout_width="match_parent"
