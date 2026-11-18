@@ -1,4 +1,3 @@
-
 package com.archi.roadsideassistance;
 
 import android.app.DatePickerDialog;
@@ -36,6 +35,7 @@ public class ServiceBookingActivity extends AppCompatActivity {
 
     private EditText etBookingLocation;
     private EditText etBookingDescription;
+    private EditText etBookingNotes;
 
     private Button btnSelectDate;
     private Button btnSelectTime;
@@ -84,6 +84,7 @@ public class ServiceBookingActivity extends AppCompatActivity {
 
         etBookingLocation = findViewById(R.id.etBookingLocation);
         etBookingDescription = findViewById(R.id.etBookingDescription);
+        etBookingNotes = findViewById(R.id.etBookingNotes);
 
         btnSelectDate = findViewById(R.id.btnSelectDate);
         btnSelectTime = findViewById(R.id.btnSelectTime);
@@ -287,6 +288,9 @@ public class ServiceBookingActivity extends AppCompatActivity {
         String description = etBookingDescription.getText()
                 .toString().trim();
 
+        String notes = etBookingNotes.getText()
+                .toString().trim();
+
         String vehicleType =
                 spVehicleType.getSelectedItem().toString();
 
@@ -298,12 +302,14 @@ public class ServiceBookingActivity extends AppCompatActivity {
                                 "\nDate: " + preferredDate +
                                 "\nTime: " + preferredTime +
                                 "\nLocation: " + location +
+                                "\nNotes for mechanic: " +
+                                (notes.isEmpty() ? "None" : notes) +
                                 "\n\nDo you want to confirm this booking?"
                 )
                 .setNegativeButton("Review", (dialog, which) ->
                         dialog.dismiss())
                 .setPositiveButton("Confirm", (dialog, which) ->
-                        saveBooking(user, vehicleType, location, description))
+                        saveBooking(user, vehicleType, location, description, notes))
                 .show();
     }
 
@@ -311,7 +317,8 @@ public class ServiceBookingActivity extends AppCompatActivity {
             FirebaseUser user,
             String vehicleType,
             String location,
-            String description
+            String description,
+            String notes
     ) {
 
         if (submitting) {
@@ -345,6 +352,7 @@ public class ServiceBookingActivity extends AppCompatActivity {
 
         request.put("location", location);
         request.put("description", description);
+        request.put("notes", notes);
 
         request.put("status", "pending");
 

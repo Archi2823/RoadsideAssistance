@@ -37,7 +37,6 @@
             android:textColor="#718096"
             android:textSize="14sp" />
 
-
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -59,7 +58,6 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
-
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -77,7 +75,6 @@
             android:background="@drawable/bg_service_card"
             android:paddingStart="12dp"
             android:paddingEnd="12dp" />
-
 
         <TextView
             android:layout_width="match_parent"
@@ -108,7 +105,6 @@
             android:textColor="#2457C5"
             android:textSize="13sp" />
 
-
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -138,7 +134,6 @@
             android:textColor="#16845D"
             android:textSize="13sp" />
 
-        <!-- Location -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -162,7 +157,6 @@
             android:textColorHint="#94A3B8"
             android:textSize="14sp" />
 
-        <!-- Description -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -186,6 +180,30 @@
             android:textColorHint="#94A3B8"
             android:textSize="14sp" />
 
+        <!-- Notes for the mechanic -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Notes for Mechanic (Optional)"
+            android:textColor="#344563"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/etBookingNotes"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_service_card"
+            android:gravity="top"
+            android:hint="Example: Please check brakes, tyre pressure or engine noise..."
+            android:inputType="textMultiLine|textCapSentences"
+            android:maxLength="500"
+            android:padding="14dp"
+            android:textColor="#173B6C"
+            android:textColorHint="#94A3B8"
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/tvBookingMessage"
