@@ -56,6 +56,7 @@ public class HomeActivity extends AppCompatActivity {
         Button btnTowingHelp = findViewById(R.id.btnTowingHelp);
         Button btnGarageTowingMap = findViewById(R.id.btnGarageTowingMap);
         Button btnMyRequests = findViewById(R.id.btnMyRequests);
+        Button btnMyBookings = findViewById(R.id.btnMyBookings);
         Button btnChangePassword = findViewById(R.id.btnChangePassword);
         Button btnLogout = findViewById(R.id.btnLogout);
         Button btnAvailableMechanics = findViewById(R.id.btnAvailableMechanics);
@@ -78,31 +79,67 @@ public class HomeActivity extends AppCompatActivity {
 
         // Profile navigation
         btnProfile.setOnClickListener(v ->
-                startActivity(new Intent(this, ProfileActivity.class)));
+                startActivity(new Intent(
+                        HomeActivity.this,
+                        ProfileActivity.class
+                ))
+        );
 
         // Battery assistance
         btnBatteryHelp.setOnClickListener(v ->
-                startActivity(new Intent(this, BatteryHelpActivity.class)));
+                startActivity(new Intent(
+                        HomeActivity.this,
+                        BatteryHelpActivity.class
+                ))
+        );
 
         // Towing assistance
         btnTowingHelp.setOnClickListener(v ->
-                startActivity(new Intent(this, TowingHelpActivity.class)));
+                startActivity(new Intent(
+                        HomeActivity.this,
+                        TowingHelpActivity.class
+                ))
+        );
 
         // Nearby garages and towing map
         btnGarageTowingMap.setOnClickListener(v ->
-                startActivity(new Intent(this, GarageTowingMapActivity.class)));
+                startActivity(new Intent(
+                        HomeActivity.this,
+                        GarageTowingMapActivity.class
+                ))
+        );
 
         // My service requests
         btnMyRequests.setOnClickListener(v ->
-                startActivity(new Intent(this, MyRequestsActivity.class)));
+                startActivity(new Intent(
+                        HomeActivity.this,
+                        MyRequestsActivity.class
+                ))
+        );
+
+        // My scheduled bookings
+        btnMyBookings.setOnClickListener(v ->
+                startActivity(new Intent(
+                        HomeActivity.this,
+                        MyBookingsActivity.class
+                ))
+        );
 
         // Available mechanics
         btnAvailableMechanics.setOnClickListener(v ->
-                startActivity(new Intent(this, AvailableMechanicsActivity.class)));
+                startActivity(new Intent(
+                        HomeActivity.this,
+                        AvailableMechanicsActivity.class
+                ))
+        );
 
         // Change password
         btnChangePassword.setOnClickListener(v ->
-                startActivity(new Intent(this, ChangePasswordActivity.class)));
+                startActivity(new Intent(
+                        HomeActivity.this,
+                        ChangePasswordActivity.class
+                ))
+        );
 
         // Logout
         btnLogout.setOnClickListener(v -> {

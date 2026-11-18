@@ -331,12 +331,25 @@
             android:textSize="15sp"
             android:textStyle="bold" />
 
+        <!-- My Bookings -->
+        <Button
+            android:id="@+id/btnMyBookings"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginTop="22dp"
+            android:backgroundTint="#173B6C"
+            android:text="My Bookings"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
         <!-- My Requests -->
         <Button
             android:id="@+id/btnMyRequests"
             android:layout_width="match_parent"
             android:layout_height="54dp"
-            android:layout_marginTop="22dp"
+            android:layout_marginTop="11dp"
             android:backgroundTint="#FFFFFF"
             android:text="My Requests"
             android:textAllCaps="false"

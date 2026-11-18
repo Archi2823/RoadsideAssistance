@@ -82,6 +82,9 @@
             android:name=".TowingHelpActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".MyBookingsActivity"
+            android:exported="false" />
         <!-- Google Maps and garage list -->
         <activity
             android:name=".GarageTowingMapActivity"
