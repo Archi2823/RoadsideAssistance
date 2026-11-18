@@ -1,17 +1,19 @@
 
 package com.archi.roadsideassistance;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -21,11 +23,14 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class MyBookingsActivity extends AppCompatActivity {
 
@@ -59,6 +64,8 @@ public class MyBookingsActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
+        inputFormat.setLenient(false);
+
         bookingsContainer = findViewById(R.id.bookingsContainer);
         tvBookingMessage = findViewById(R.id.tvBookingMessage);
 
@@ -85,6 +92,15 @@ public class MyBookingsActivity extends AppCompatActivity {
         loadBookings();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (db != null && auth != null && auth.getCurrentUser() != null) {
+            loadBookings();
+        }
+    }
+
     private void loadBookings() {
 
         if (auth.getCurrentUser() == null) {
@@ -92,6 +108,7 @@ public class MyBookingsActivity extends AppCompatActivity {
             return;
         }
 
+        tvBookingMessage.setVisibility(View.VISIBLE);
         tvBookingMessage.setText("Loading your bookings...");
         bookingsContainer.removeAllViews();
 
@@ -114,8 +131,6 @@ public class MyBookingsActivity extends AppCompatActivity {
                         String preferredTime =
                                 document.getString("preferredTime");
 
-                        // Scheduled bookings have both appointment fields.
-                        // This also supports future scheduled service types.
                         if (preferredDate == null || preferredTime == null
                                 || preferredDate.trim().isEmpty()
                                 || preferredTime.trim().isEmpty()) {
@@ -130,6 +145,8 @@ public class MyBookingsActivity extends AppCompatActivity {
                             if (appointmentDate == null) continue;
 
                             BookingItem item = new BookingItem();
+
+                            item.documentId = document.getId();
 
                             item.serviceType = getText(
                                     document, "serviceType", "Scheduled Service");
@@ -149,6 +166,12 @@ public class MyBookingsActivity extends AppCompatActivity {
                             item.technicianPhone = getText(
                                     document, "technicianPhone", "");
 
+                            Boolean assigned =
+                                    document.getBoolean("technicianAssigned");
+
+                            item.technicianAssigned =
+                                    assigned != null && assigned;
+
                             item.preferredDate = preferredDate;
                             item.preferredTime = preferredTime;
                             item.appointmentDate = appointmentDate;
@@ -156,7 +179,7 @@ public class MyBookingsActivity extends AppCompatActivity {
                             allBookings.add(item);
 
                         } catch (ParseException e) {
-                            // Ignore bookings with an invalid date/time format.
+                            // Ignore invalid appointment date/time.
                         }
                     }
 
@@ -167,6 +190,7 @@ public class MyBookingsActivity extends AppCompatActivity {
 
                     if (isFinishing() || isDestroyed()) return;
 
+                    tvBookingMessage.setVisibility(View.VISIBLE);
                     tvBookingMessage.setText(
                             "Unable to load bookings. Please try again."
                     );
@@ -315,16 +339,336 @@ public class MyBookingsActivity extends AppCompatActivity {
         addDetail(card, "Location", item.location);
 
         if (!item.technicianName.isEmpty()) {
-            addDetail(card, "Assigned Technician",
-                    item.technicianName);
+            addDetail(card, "Assigned Technician", item.technicianName);
         }
 
         if (!item.technicianPhone.isEmpty()) {
-            addDetail(card, "Technician Phone",
-                    item.technicianPhone);
+            addDetail(card, "Technician Phone", item.technicianPhone);
+        }
+
+        // Actions are available only while the booking is still pending
+        // and no worker has been assigned.
+        if (isModifiable(item)) {
+
+            LinearLayout actionRow = new LinearLayout(this);
+            actionRow.setOrientation(LinearLayout.HORIZONTAL);
+            actionRow.setWeightSum(2);
+
+            LinearLayout.LayoutParams rowParams =
+                    new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                    );
+
+            rowParams.topMargin = dp(10);
+            actionRow.setLayoutParams(rowParams);
+
+            Button btnReschedule = new Button(this);
+            btnReschedule.setText("Reschedule");
+            btnReschedule.setAllCaps(false);
+            btnReschedule.setTextColor(Color.WHITE);
+            btnReschedule.setTextSize(13);
+            btnReschedule.setBackgroundTintList(
+                    android.content.res.ColorStateList.valueOf(
+                            Color.rgb(23, 59, 108))
+            );
+
+            LinearLayout.LayoutParams rescheduleParams =
+                    new LinearLayout.LayoutParams(
+                            0,
+                            dp(48),
+                            1
+                    );
+
+            rescheduleParams.setMargins(0, 0, dp(5), 0);
+            btnReschedule.setLayoutParams(rescheduleParams);
+
+            btnReschedule.setOnClickListener(v ->
+                    showRescheduleDialog(item));
+
+            Button btnCancel = new Button(this);
+            btnCancel.setText("Cancel Booking");
+            btnCancel.setAllCaps(false);
+            btnCancel.setTextColor(Color.WHITE);
+            btnCancel.setTextSize(13);
+            btnCancel.setBackgroundTintList(
+                    android.content.res.ColorStateList.valueOf(
+                            Color.rgb(190, 55, 55))
+            );
+
+            LinearLayout.LayoutParams cancelParams =
+                    new LinearLayout.LayoutParams(
+                            0,
+                            dp(48),
+                            1
+                    );
+
+            cancelParams.setMargins(dp(5), 0, 0, 0);
+            btnCancel.setLayoutParams(cancelParams);
+
+            btnCancel.setOnClickListener(v ->
+                    showCancelConfirmation(item));
+
+            actionRow.addView(btnReschedule);
+            actionRow.addView(btnCancel);
+
+            card.addView(actionRow);
         }
 
         bookingsContainer.addView(card);
+    }
+
+    private boolean isModifiable(BookingItem item) {
+
+        return showUpcoming
+                && "pending".equalsIgnoreCase(item.status)
+                && !item.technicianAssigned;
+    }
+
+    private void showCancelConfirmation(BookingItem item) {
+
+        new AlertDialog.Builder(this)
+                .setTitle("Cancel Booking")
+                .setMessage(
+                        "Are you sure you want to cancel your "
+                                + item.serviceType + " booking?"
+                )
+                .setNegativeButton("No", (dialog, which) ->
+                        dialog.dismiss())
+                .setPositiveButton("Yes, Cancel", (dialog, which) ->
+                        cancelBooking(item))
+                .show();
+    }
+
+    private void cancelBooking(BookingItem item) {
+
+        if (!isModifiable(item)) {
+            showBookingLockedMessage();
+            loadBookings();
+            return;
+        }
+
+        db.collection("serviceRequests")
+                .document(item.documentId)
+                .update("status", "cancelled")
+                .addOnSuccessListener(unused -> {
+
+                    Toast.makeText(
+                            this,
+                            "Booking cancelled successfully.",
+                            Toast.LENGTH_SHORT
+                    ).show();
+
+                    loadBookings();
+                })
+                .addOnFailureListener(e -> {
+
+                    Toast.makeText(
+                            this,
+                            "Unable to cancel booking. The worker may have accepted it.",
+                            Toast.LENGTH_LONG
+                    ).show();
+
+                    loadBookings();
+                });
+    }
+
+    private void showRescheduleDialog(BookingItem item) {
+
+        if (!isModifiable(item)) {
+            showBookingLockedMessage();
+            loadBookings();
+            return;
+        }
+
+        Calendar current = Calendar.getInstance();
+
+        try {
+            Date existingDate = inputFormat.parse(
+                    item.preferredDate + " " + item.preferredTime
+            );
+
+            if (existingDate != null) {
+                current.setTime(existingDate);
+            }
+        } catch (ParseException ignored) {
+        }
+
+        DatePickerDialog dateDialog = new DatePickerDialog(
+                this,
+                (datePicker, year, month, day) -> {
+
+                    Calendar selectedDate = Calendar.getInstance();
+                    selectedDate.set(year, month, day);
+
+                    Calendar today = Calendar.getInstance();
+                    today.set(Calendar.HOUR_OF_DAY, 0);
+                    today.set(Calendar.MINUTE, 0);
+                    today.set(Calendar.SECOND, 0);
+                    today.set(Calendar.MILLISECOND, 0);
+
+                    if (selectedDate.before(today)) {
+                        Toast.makeText(
+                                this,
+                                "Please select today or a future date.",
+                                Toast.LENGTH_SHORT
+                        ).show();
+                        return;
+                    }
+
+                    showTimePicker(item, selectedDate);
+                },
+                current.get(Calendar.YEAR),
+                current.get(Calendar.MONTH),
+                current.get(Calendar.DAY_OF_MONTH)
+        );
+
+        dateDialog.getDatePicker().setMinDate(
+                System.currentTimeMillis() - 1000
+        );
+
+        dateDialog.setTitle("Select New Date");
+        dateDialog.show();
+    }
+
+    private void showTimePicker(
+            BookingItem item,
+            Calendar selectedDate) {
+
+        Calendar current = Calendar.getInstance();
+
+        int hour = current.get(Calendar.HOUR_OF_DAY);
+        int minute = current.get(Calendar.MINUTE);
+
+        TimePickerDialog timeDialog = new TimePickerDialog(
+                this,
+                (timePicker, selectedHour, selectedMinute) -> {
+
+                    Calendar selectedDateTime =
+                            (Calendar) selectedDate.clone();
+
+                    selectedDateTime.set(
+                            Calendar.HOUR_OF_DAY, selectedHour);
+
+                    selectedDateTime.set(
+                            Calendar.MINUTE, selectedMinute);
+
+                    selectedDateTime.set(
+                            Calendar.SECOND, 0);
+
+                    selectedDateTime.set(
+                            Calendar.MILLISECOND, 0);
+
+                    if (selectedDateTime.getTime().before(new Date())) {
+                        Toast.makeText(
+                                this,
+                                "Please select a future time.",
+                                Toast.LENGTH_SHORT
+                        ).show();
+                        return;
+                    }
+
+                    String newDate = new SimpleDateFormat(
+                            "yyyy-MM-dd",
+                            Locale.getDefault()
+                    ).format(selectedDateTime.getTime());
+
+                    String newTime = new SimpleDateFormat(
+                            "hh:mm a",
+                            Locale.getDefault()
+                    ).format(selectedDateTime.getTime());
+
+                    confirmReschedule(item, newDate, newTime);
+                },
+                hour,
+                minute,
+                false
+        );
+
+        timeDialog.setTitle("Select New Time");
+        timeDialog.show();
+    }
+
+    private void confirmReschedule(
+            BookingItem item,
+            String newDate,
+            String newTime) {
+
+        String readableDate;
+
+        try {
+            Date parsedDate = inputFormat.parse(newDate + " " + newTime);
+            readableDate = displayDateFormat.format(parsedDate);
+        } catch (Exception e) {
+            Toast.makeText(
+                    this,
+                    "Invalid date or time.",
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle("Confirm Reschedule")
+                .setMessage(
+                        "New date: " + readableDate
+                                + "\nNew time: " + newTime
+                                + "\n\nDo you want to update this booking?"
+                )
+                .setNegativeButton("Back", (dialog, which) ->
+                        dialog.dismiss())
+                .setPositiveButton("Confirm", (dialog, which) ->
+                        updateBookingDateTime(item, newDate, newTime))
+                .show();
+    }
+
+    private void updateBookingDateTime(
+            BookingItem item,
+            String newDate,
+            String newTime) {
+
+        if (!isModifiable(item)) {
+            showBookingLockedMessage();
+            loadBookings();
+            return;
+        }
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("preferredDate", newDate);
+        updates.put("preferredTime", newTime);
+
+        db.collection("serviceRequests")
+                .document(item.documentId)
+                .update(updates)
+                .addOnSuccessListener(unused -> {
+
+                    Toast.makeText(
+                            this,
+                            "Booking rescheduled successfully.",
+                            Toast.LENGTH_SHORT
+                    ).show();
+
+                    loadBookings();
+                })
+                .addOnFailureListener(e -> {
+
+                    Toast.makeText(
+                            this,
+                            "Unable to reschedule. The worker may have accepted the booking.",
+                            Toast.LENGTH_LONG
+                    ).show();
+
+                    loadBookings();
+                });
+    }
+
+    private void showBookingLockedMessage() {
+
+        Toast.makeText(
+                this,
+                "This booking can no longer be changed because a worker has accepted it.",
+                Toast.LENGTH_LONG
+        ).show();
     }
 
     private void addDetail(
@@ -409,6 +753,7 @@ public class MyBookingsActivity extends AppCompatActivity {
         if (value == null || value.isEmpty()) return "Pending";
 
         String result = value.replace("_", " ");
+
         return result.substring(0, 1).toUpperCase(Locale.ROOT)
                 + result.substring(1);
     }
@@ -416,6 +761,7 @@ public class MyBookingsActivity extends AppCompatActivity {
     private void updateTabButtons() {
 
         if (showUpcoming) {
+
             btnUpcoming.setBackgroundTintList(
                     android.content.res.ColorStateList.valueOf(
                             Color.rgb(23, 59, 108))
@@ -455,6 +801,7 @@ public class MyBookingsActivity extends AppCompatActivity {
 
     private static class BookingItem {
 
+        String documentId;
         String serviceType;
         String vehicleType;
         String location;
@@ -464,5 +811,6 @@ public class MyBookingsActivity extends AppCompatActivity {
         String preferredDate;
         String preferredTime;
         Date appointmentDate;
+        boolean technicianAssigned;
     }
 }
