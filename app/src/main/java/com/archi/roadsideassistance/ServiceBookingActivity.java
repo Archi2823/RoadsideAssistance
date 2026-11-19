@@ -1,3 +1,4 @@
+
 package com.archi.roadsideassistance;
 
 import android.app.DatePickerDialog;
@@ -68,9 +69,12 @@ public class ServiceBookingActivity extends AppCompatActivity {
                         || serviceType.equals("Annual Service")
                         || serviceType.equals("Inspection"))) {
 
-            Toast.makeText(this,
+            Toast.makeText(
+                    this,
                     "Invalid service selected",
-                    Toast.LENGTH_SHORT).show();
+                    Toast.LENGTH_SHORT
+            ).show();
+
             finish();
             return;
         }
@@ -144,10 +148,7 @@ public class ServiceBookingActivity extends AppCompatActivity {
                             dayOfMonth
                     );
 
-                    selectedCalendar.set(
-                            Calendar.SECOND,
-                            0
-                    );
+                    selectedCalendar.set(Calendar.SECOND, 0);
 
                     preferredDate = new SimpleDateFormat(
                             "yyyy-MM-dd",
@@ -164,6 +165,7 @@ public class ServiceBookingActivity extends AppCompatActivity {
                     // Reset previously selected time
                     preferredTime = "";
                     tvSelectedTime.setText("No time selected");
+
                 },
                 today.get(Calendar.YEAR),
                 today.get(Calendar.MONTH),
@@ -309,7 +311,13 @@ public class ServiceBookingActivity extends AppCompatActivity {
                 .setNegativeButton("Review", (dialog, which) ->
                         dialog.dismiss())
                 .setPositiveButton("Confirm", (dialog, which) ->
-                        saveBooking(user, vehicleType, location, description, notes))
+                        saveBooking(
+                                user,
+                                vehicleType,
+                                location,
+                                description,
+                                notes
+                        ))
                 .show();
     }
 
@@ -391,14 +399,12 @@ public class ServiceBookingActivity extends AppCompatActivity {
                                         return;
                                     }
 
-                                    Toast.makeText(
-                                            ServiceBookingActivity.this,
-                                            "Booking confirmed and assigned to "
-                                                    + workerName,
-                                            Toast.LENGTH_LONG
-                                    ).show();
-
-                                    finish();
+                                    // Fetch assigned worker's charges
+                                    fetchAssignedWorkerCharges(
+                                            requestId,
+                                            workerName,
+                                            vehicleType
+                                    );
                                 }
 
                                 @Override
@@ -431,7 +437,8 @@ public class ServiceBookingActivity extends AppCompatActivity {
                                     }
 
                                     tvBookingMessage.setText(
-                                            "Booking saved, but assignment failed: " + message
+                                            "Booking saved, but assignment failed: "
+                                                    + message
                                     );
 
                                     btnConfirmBooking.setText("Booking Saved");
@@ -455,5 +462,212 @@ public class ServiceBookingActivity extends AppCompatActivity {
                                     + e.getLocalizedMessage()
                     );
                 });
+    }
+
+    // --------------------------------------------------
+    // Fetch the assigned worker's service charge
+    // --------------------------------------------------
+
+    private void fetchAssignedWorkerCharges(
+            String requestId,
+            String workerName,
+            String vehicleType
+    ) {
+
+        tvBookingMessage.setText(
+                "Worker assigned. Fetching service charges..."
+        );
+
+        // Read actual assigned worker UID from booking document
+        db.collection("serviceRequests")
+                .document(requestId)
+                .get()
+                .addOnSuccessListener(requestDocument -> {
+
+                    if (isFinishing() || isDestroyed()) {
+                        return;
+                    }
+
+                    if (!requestDocument.exists()) {
+                        showWorkerBookingResult(
+                                workerName,
+                                "Price unavailable",
+                                "Booking saved, but request details could not be read."
+                        );
+                        return;
+                    }
+
+                    String assignedWorkerId =
+                            requestDocument.getString("assignedWorkerId");
+
+                    if (assignedWorkerId == null
+                            || assignedWorkerId.trim().isEmpty()) {
+
+                        showWorkerBookingResult(
+                                workerName,
+                                "Price unavailable",
+                                "The assigned worker ID was not found."
+                        );
+                        return;
+                    }
+
+                    // Read charges from this specific worker
+                    db.collection("serviceCharges")
+                            .document(assignedWorkerId)
+                            .collection("vehicleCharges")
+                            .document(vehicleType)
+                            .get()
+                            .addOnSuccessListener(chargeDocument -> {
+
+                                if (isFinishing() || isDestroyed()) {
+                                    return;
+                                }
+
+                                if (!chargeDocument.exists()) {
+
+                                    showWorkerBookingResult(
+                                            workerName,
+                                            "Price not set by worker",
+                                            "The worker has not set charges for "
+                                                    + vehicleType + "."
+                                    );
+
+                                    return;
+                                }
+
+                                String chargeField =
+                                        getChargeFieldForService(serviceType);
+
+                                Object chargeValue =
+                                        chargeDocument.get(chargeField);
+
+                                if (chargeValue == null) {
+
+                                    showWorkerBookingResult(
+                                            workerName,
+                                            "Price not set by worker",
+                                            "The worker has not set a price for "
+                                                    + serviceType + "."
+                                    );
+
+                                    return;
+                                }
+
+                                String formattedPrice =
+                                        formatPrice(chargeValue);
+
+                                showWorkerBookingResult(
+                                        workerName,
+                                        formattedPrice,
+                                        "Your booking has been assigned successfully."
+                                );
+                            })
+                            .addOnFailureListener(e -> {
+
+                                if (isFinishing() || isDestroyed()) {
+                                    return;
+                                }
+
+                                showWorkerBookingResult(
+                                        workerName,
+                                        "Price unavailable",
+                                        "Unable to load worker charges."
+                                );
+                            });
+                })
+                .addOnFailureListener(e -> {
+
+                    if (isFinishing() || isDestroyed()) {
+                        return;
+                    }
+
+                    showWorkerBookingResult(
+                            workerName,
+                            "Price unavailable",
+                            "Unable to read assigned worker details."
+                    );
+                });
+    }
+
+    // Map selected service to Firestore price field
+    private String getChargeFieldForService(String selectedService) {
+
+        if ("General Service".equals(selectedService)) {
+            return "generalServiceCharge";
+        }
+
+        if ("Annual Service".equals(selectedService)) {
+            return "annualServiceCharge";
+        }
+
+        if ("Inspection".equals(selectedService)) {
+            return "inspectionCharge";
+        }
+
+        return "";
+    }
+
+    // Format price for display
+    private String formatPrice(Object priceValue) {
+
+        if (priceValue instanceof Number) {
+
+            double amount = ((Number) priceValue).doubleValue();
+
+            return String.format(
+                    Locale.getDefault(),
+                    "₹%.2f",
+                    amount
+            );
+        }
+
+        return "₹" + String.valueOf(priceValue);
+    }
+
+    // Show assigned worker and charge to customer
+    private void showWorkerBookingResult(
+            String workerName,
+            String priceText,
+            String message
+    ) {
+
+        if (isFinishing() || isDestroyed()) {
+            return;
+        }
+
+        String displayWorker =
+                (workerName == null || workerName.trim().isEmpty())
+                        ? "Assigned Mechanic"
+                        : workerName;
+
+        String bookingDetails =
+                "Service: " + serviceType +
+                        "\nWorker: " + displayWorker +
+                        "\nVehicle: " +
+                        spVehicleType.getSelectedItem().toString() +
+                        "\nService Charge: " + priceText +
+                        "\nDate: " + preferredDate +
+                        "\nTime: " + preferredTime +
+                        "\n\n" + message;
+
+        tvBookingMessage.setText(
+                "Booking assigned successfully."
+        );
+
+        new AlertDialog.Builder(this)
+                .setTitle("Booking Assigned")
+                .setMessage(bookingDetails)
+                .setCancelable(false)
+                .setPositiveButton("Done", (dialog, which) -> {
+                    dialog.dismiss();
+                    finish();
+                })
+                .show();
+
+        Toast.makeText(
+                this,
+                "Booking assigned successfully!",
+                Toast.LENGTH_SHORT
+        ).show();
     }
 }

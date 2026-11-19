@@ -2,20 +2,21 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F7F8FA"
+    android:background="#F4F7FB"
     android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:padding="24dp">
 
+        <!-- HEADER -->
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Become a Service Provider"
-            android:textColor="#1B1B1B"
+            android:text="Service Provider Registration"
+            android:textColor="#183153"
             android:textSize="25sp"
             android:textStyle="bold" />
 
@@ -23,8 +24,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Register with us and help customers on the road."
-            android:textColor="#777777"
+            android:text="Join our roadside assistance network and start helping customers."
+            android:textColor="#6B7280"
             android:textSize="14sp" />
 
         <!-- PERSONAL INFORMATION -->
@@ -34,68 +35,108 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="Personal Information"
-            android:textColor="#222222"
+            android:textColor="#183153"
             android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:text="Full Name *"
+            android:textColor="#26364D"
             android:textStyle="bold" />
 
         <EditText
             android:id="@+id/etProviderFullName"
             android:layout_width="match_parent"
             android:layout_height="55dp"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="6dp"
             android:background="#FFFFFF"
-            android:hint="Full Name"
+            android:hint="Enter your full name"
             android:padding="15dp"
             android:textColor="#222222"
-            android:textColorHint="#888888"
+            android:textColorHint="#8A9AB3"
             android:inputType="textPersonName" />
 
-        <EditText
-            android:id="@+id/etProviderPhone"
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:layout_marginTop="10dp"
-            android:background="#FFFFFF"
-            android:hint="Mobile Number"
-            android:padding="15dp"
-            android:textColor="#222222"
-            android:textColorHint="#888888"
-            android:inputType="phone"
-            android:maxLength="10" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:text="Email Address *"
+            android:textColor="#26364D"
+            android:textStyle="bold" />
 
         <EditText
             android:id="@+id/etProviderEmail"
             android:layout_width="match_parent"
             android:layout_height="55dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="6dp"
             android:background="#FFFFFF"
-            android:hint="Email Address"
+            android:hint="Enter your email"
             android:padding="15dp"
             android:textColor="#222222"
-            android:textColorHint="#888888"
+            android:textColorHint="#8A9AB3"
             android:inputType="textEmailAddress" />
-
-        <!-- PROFESSIONAL INFORMATION -->
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="Professional Information"
+            android:layout_marginTop="14dp"
+            android:text="Mobile Number *"
+            android:textColor="#26364D"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/etProviderPhone"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginTop="6dp"
+            android:background="#FFFFFF"
+            android:hint="Enter 10-digit mobile number"
+            android:padding="15dp"
             android:textColor="#222222"
+            android:textColorHint="#8A9AB3"
+            android:inputType="phone"
+            android:maxLength="10" />
+
+        <!-- PROFESSIONAL DETAILS -->
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="26dp"
+            android:text="Professional Details"
+            android:textColor="#183153"
             android:textSize="18sp"
             android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:text="Service Category *"
+            android:textColor="#26364D"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/spProviderServiceCategory"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginTop="6dp"
+            android:background="#FFFFFF"
+            android:paddingHorizontal="12dp" />
 
         <EditText
             android:id="@+id/etProviderGarage"
             android:layout_width="match_parent"
             android:layout_height="55dp"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="14dp"
             android:background="#FFFFFF"
             android:hint="Garage / Workshop Name (Optional)"
             android:padding="15dp"
             android:textColor="#222222"
-            android:textColorHint="#888888" />
+            android:textColorHint="#8A9AB3" />
 
         <EditText
             android:id="@+id/etProviderExperience"
@@ -106,28 +147,30 @@
             android:hint="Experience (Years)"
             android:padding="15dp"
             android:textColor="#222222"
-            android:textColorHint="#888888"
+            android:textColorHint="#8A9AB3"
             android:inputType="number" />
 
         <EditText
             android:id="@+id/etProviderSpecialization"
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="80dp"
             android:layout_marginTop="10dp"
             android:background="#FFFFFF"
-            android:hint="Specialization (Mechanic, Electrician...)"
+            android:gravity="top"
+            android:hint="Specialization (e.g. Engine repair, puncture repair, EV diagnostics)"
             android:padding="15dp"
             android:textColor="#222222"
-            android:textColorHint="#888888" />
+            android:textColorHint="#8A9AB3"
+            android:inputType="textMultiLine" />
 
-        <!-- SERVICES -->
+        <!-- NORMAL SERVICES OFFERED -->
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="Services You Provide"
-            android:textColor="#222222"
+            android:layout_marginTop="26dp"
+            android:text="Basic Roadside Services"
+            android:textColor="#183153"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -135,8 +178,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:text="Select all services you can provide"
-            android:textColor="#777777"
+            android:text="Select the normal roadside services you can provide."
+            android:textColor="#6B7280"
             android:textSize="13sp" />
 
         <CheckBox
@@ -145,51 +188,51 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Bike Repair"
-            android:textColor="#333333" />
+            android:textColor="#26364D" />
 
         <CheckBox
             android:id="@+id/cbCarRepair"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Car Repair"
-            android:textColor="#333333" />
+            android:textColor="#26364D" />
 
         <CheckBox
             android:id="@+id/cbBattery"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Battery Assistance / Jump Start"
-            android:textColor="#333333" />
+            android:textColor="#26364D" />
 
         <CheckBox
             android:id="@+id/cbTowing"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Towing Assistance"
-            android:textColor="#333333" />
+            android:textColor="#26364D" />
 
         <CheckBox
             android:id="@+id/cbMaintenance"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="General Maintenance"
-            android:textColor="#333333" />
+            android:textColor="#26364D" />
 
         <CheckBox
             android:id="@+id/cbEmergency"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Emergency Roadside Repair"
-            android:textColor="#333333" />
+            android:textColor="#26364D" />
 
-        <!-- LOCATION -->
+        <!-- SERVICE LOCATION -->
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="26dp"
             android:text="Service Location"
-            android:textColor="#222222"
+            android:textColor="#183153"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -199,10 +242,10 @@
             android:layout_height="55dp"
             android:layout_marginTop="12dp"
             android:background="#FFFFFF"
-            android:hint="City"
+            android:hint="Enter your city *"
             android:padding="15dp"
             android:textColor="#222222"
-            android:textColorHint="#888888" />
+            android:textColorHint="#8A9AB3" />
 
         <EditText
             android:id="@+id/etProviderPincode"
@@ -210,10 +253,10 @@
             android:layout_height="55dp"
             android:layout_marginTop="10dp"
             android:background="#FFFFFF"
-            android:hint="Pincode"
+            android:hint="6-digit pincode *"
             android:padding="15dp"
             android:textColor="#222222"
-            android:textColorHint="#888888"
+            android:textColorHint="#8A9AB3"
             android:inputType="number"
             android:maxLength="6" />
 
@@ -224,10 +267,10 @@
             android:layout_marginTop="10dp"
             android:background="#FFFFFF"
             android:gravity="top"
-            android:hint="Areas you can cover"
+            android:hint="Areas / localities you cover"
             android:padding="15dp"
             android:textColor="#222222"
-            android:textColorHint="#888888"
+            android:textColorHint="#8A9AB3"
             android:inputType="textMultiLine" />
 
         <!-- AVAILABILITY -->
@@ -235,43 +278,125 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="26dp"
             android:text="Availability"
-            android:textColor="#222222"
+            android:textColor="#183153"
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <EditText
-            android:id="@+id/etProviderAvailableDays"
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:background="#FFFFFF"
-            android:hint="Available Days (e.g. Mon-Sat)"
-            android:padding="15dp"
-            android:textColor="#222222"
-            android:textColorHint="#888888" />
+            android:text="Available Days"
+            android:textColor="#26364D"
+            android:textStyle="bold" />
+
+        <CheckBox
+            android:id="@+id/cbMonday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Monday"
+            android:textColor="#26364D" />
+
+        <CheckBox
+            android:id="@+id/cbTuesday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tuesday"
+            android:textColor="#26364D" />
+
+        <CheckBox
+            android:id="@+id/cbWednesday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Wednesday"
+            android:textColor="#26364D" />
+
+        <CheckBox
+            android:id="@+id/cbThursday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Thursday"
+            android:textColor="#26364D" />
+
+        <CheckBox
+            android:id="@+id/cbFriday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Friday"
+            android:textColor="#26364D" />
+
+        <CheckBox
+            android:id="@+id/cbSaturday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Saturday"
+            android:textColor="#26364D" />
+
+        <CheckBox
+            android:id="@+id/cbSunday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sunday"
+            android:textColor="#26364D" />
 
         <EditText
             android:id="@+id/etProviderWorkingHours"
             android:layout_width="match_parent"
             android:layout_height="55dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="12dp"
             android:background="#FFFFFF"
-            android:hint="Working Hours (e.g. 9 AM - 8 PM)"
+            android:hint="Working Hours (e.g. 9:00 AM - 8:00 PM)"
             android:padding="15dp"
             android:textColor="#222222"
-            android:textColorHint="#888888" />
+            android:textColorHint="#8A9AB3" />
 
-        <!-- SUBMIT -->
+        <!-- ACCOUNT SECURITY -->
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="26dp"
+            android:text="Account Security"
+            android:textColor="#183153"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/etProviderPassword"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginTop="12dp"
+            android:background="#FFFFFF"
+            android:hint="Create a password *"
+            android:padding="15dp"
+            android:textColor="#222222"
+            android:textColorHint="#8A9AB3"
+            android:inputType="textPassword" />
+
+        <EditText
+            android:id="@+id/etProviderConfirmPassword"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginTop="10dp"
+            android:background="#FFFFFF"
+            android:hint="Confirm your password *"
+            android:padding="15dp"
+            android:textColor="#222222"
+            android:textColorHint="#8A9AB3"
+            android:inputType="textPassword" />
+
+        <!-- REGISTER -->
 
         <Button
             android:id="@+id/btnSubmitProviderRegistration"
             android:layout_width="match_parent"
             android:layout_height="55dp"
             android:layout_marginTop="30dp"
-            android:backgroundTint="#F57C00"
-            android:text="Submit Application"
+            android:backgroundTint="#2563EB"
+            android:text="Register as Service Provider"
+            android:textAllCaps="false"
             android:textColor="#FFFFFF"
             android:textSize="16sp"
             android:textStyle="bold" />

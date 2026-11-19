@@ -2,134 +2,140 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F4F7FB"
     android:fillViewport="true"
-    android:background="#FFFFFF">
+    android:clipToPadding="false">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:gravity="center_horizontal"
-        android:padding="24dp">
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingTop="32dp"
+        android:paddingBottom="32dp">
 
+        <!-- App Branding -->
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="55dp"
-            android:text="Road Side Assistance"
-            android:textColor="#173B6C"
-            android:textSize="27sp"
-            android:textStyle="bold" />
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/splash_logo_bg"
+            android:gravity="center"
+            android:text="🚘"
+            android:textSize="32sp"
+            android:contentDescription="Roadside assistance logo" />
 
+        <!-- Heading -->
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="25dp"
-            android:text="Login to your account"
-            android:textColor="#666666"
-            android:textSize="16sp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Select Account Type"
-            android:textColor="#173B6C"
-            android:textStyle="bold"
-            android:textSize="15sp"
-            android:layout_marginBottom="8dp" />
-
-        <RadioGroup
-            android:id="@+id/rgUserRole"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="20dp">
-
-            <RadioButton
-                android:id="@+id/rbCustomer"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Customer"
-                android:checked="true"
-                android:textColor="#173B6C"
-                android:buttonTint="#173B6C"
-                android:padding="5dp" />
-
-            <RadioButton
-                android:id="@+id/rbWorker"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Worker"
-                android:textColor="#173B6C"
-                android:buttonTint="#173B6C"
-                android:padding="5dp" />
-
-            <RadioButton
-                android:id="@+id/rbAdmin"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Admin"
-                android:textColor="#173B6C"
-                android:buttonTint="#173B6C"
-                android:padding="5dp" />
-
-        </RadioGroup>
-
-        <EditText
-            android:id="@+id/etEmail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Email address"
-            android:inputType="textEmailAddress"
-            android:autofillHints="emailAddress"
-            android:padding="16dp"
-            android:layout_marginBottom="16dp" />
-
-        <EditText
-            android:id="@+id/etPassword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Password"
-            android:inputType="textPassword"
-            android:autofillHints="password"
-            android:padding="16dp"
-            android:layout_marginBottom="8dp" />
-
-        <TextView
-            android:id="@+id/tvForgotPassword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Forgot Password?"
-            android:textColor="#173B6C"
-            android:gravity="end"
-            android:padding="8dp"
-            android:clickable="true"
-            android:focusable="true" />
-
-        <Button
-            android:id="@+id/btnLogin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="Login"
-            android:textAllCaps="false"
-            android:padding="12dp" />
+            android:gravity="center"
+            android:text="Road Side Assistance"
+            android:textColor="#10243A"
+            android:textSize="30sp"
+            android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/tvRegister"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="32dp"
+            android:gravity="center"
+            android:text="Login to your account"
+            android:textColor="#64748B"
+            android:textSize="15sp" />
+
+        <!-- Email Label -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            android:text="Email Address"
+            android:textColor="#10243A"
+            android:textStyle="bold"
+            android:textSize="14sp" />
+
+        <!-- Email -->
+        <EditText
+            android:id="@+id/etEmail"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/signup_input_bg"
+            android:hint="example@email.com"
+            android:inputType="textEmailAddress"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:singleLine="true"
+            android:textColor="#10243A"
+            android:textColorHint="#94A3B8"
+            android:textSize="15sp" />
+
+        <!-- Password Label -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            android:text="Password"
+            android:textColor="#10243A"
+            android:textStyle="bold"
+            android:textSize="14sp" />
+
+        <!-- Password -->
+        <EditText
+            android:id="@+id/etPassword"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/signup_input_bg"
+            android:hint="Enter your password"
+            android:inputType="textPassword"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:singleLine="true"
+            android:textColor="#10243A"
+            android:textColorHint="#94A3B8"
+            android:textSize="15sp" />
+
+        <!-- Forgot Password -->
+        <TextView
+            android:id="@+id/tvForgotPassword"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginBottom="24dp"
+            android:padding="4dp"
+            android:text="Forgot Password?"
+            android:textColor="#2563EB"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <!-- Login Button -->
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:backgroundTint="#10243A"
+            android:text="LOGIN"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <!-- Signup Link -->
+        <TextView
+            android:id="@+id/tvRegister"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Don't have an account? Sign up"
-            android:textColor="#173B6C"
-            android:textSize="15sp"
+            android:gravity="center"
             android:padding="8dp"
-            android:clickable="true"
-            android:focusable="true" />
+            android:text="Don't have an account? Sign Up"
+            android:textColor="#2563EB"
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
     </LinearLayout>
 

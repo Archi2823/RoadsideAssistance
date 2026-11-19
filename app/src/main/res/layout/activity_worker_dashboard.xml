@@ -174,6 +174,19 @@
 
     </LinearLayout>
 
+    <!-- SERVICE CHARGES BUTTON -->
+    <Button
+        android:id="@+id/btnServiceCharges"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="#2563EB"
+        android:text="₹  Manage Service Charges"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
     <!-- REQUEST CONTENT -->
     <ScrollView
         android:layout_width="match_parent"

@@ -132,6 +132,10 @@
             android:exported="false" />
 
         <activity
+            android:name=".ServiceChargesActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".MainActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />

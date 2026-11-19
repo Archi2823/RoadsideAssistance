@@ -8,7 +8,6 @@ import android.util.Log;
 import android.util.Patterns;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,50 +24,42 @@ public class MainActivity extends AppCompatActivity {
     private EditText etEmail, etPassword;
     private Button btnLogin;
     private TextView tvRegister, tvForgotPassword;
-    private RadioGroup rgUserRole;
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
 
-    private String selectedRole = "customer";
     private boolean loginInProgress = false;
 
     private static final String TAG = "MAIN_CHECK";
+
+    // Existing authorized admin UID
+    private static final String ADMIN_UID =
+            "mfKj4Ggasqe1aQT9z5fb9JokXV82";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.e(TAG, "MainActivity onCreate started");
+        Log.d(TAG, "MainActivity onCreate started");
 
-        // Load original login screen
         setContentView(R.layout.activity_main);
 
-        Log.e(TAG, "activity_main layout loaded");
-
-        // Initialize Firebase
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-        Log.e(TAG, "Firebase initialized");
-
-        // Connect views
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
         tvRegister = findViewById(R.id.tvRegister);
         tvForgotPassword = findViewById(R.id.tvForgotPassword);
-        rgUserRole = findViewById(R.id.rgUserRole);
 
-        // Verify views
         if (etEmail == null
                 || etPassword == null
                 || btnLogin == null
                 || tvRegister == null
-                || tvForgotPassword == null
-                || rgUserRole == null) {
+                || tvForgotPassword == null) {
 
-            Log.e(TAG, "ERROR: One or more views are missing");
+            Log.e(TAG, "Login screen initialization error");
 
             Toast.makeText(
                     this,
@@ -79,103 +70,27 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        Log.e(TAG, "All views connected successfully");
-
-        // Default role: Customer
-        rgUserRole.check(R.id.rbCustomer);
-        selectedRole = "customer";
-
-        // Update signup text
-        updateSignupText();
-
-        // Role selection listener
-        rgUserRole.setOnCheckedChangeListener((group, checkedId) -> {
-
-            if (checkedId == R.id.rbCustomer) {
-                selectedRole = "customer";
-
-            } else if (checkedId == R.id.rbWorker) {
-                selectedRole = "worker";
-
-            } else if (checkedId == R.id.rbAdmin) {
-                selectedRole = "admin";
-            }
-
-            Log.d(TAG, "Selected role: " + selectedRole);
-
-            updateSignupText();
-        });
-
-        // Login button
         btnLogin.setOnClickListener(v -> loginUser());
 
-        // Signup navigation
         tvRegister.setOnClickListener(v -> openSignupScreen());
 
-        // Forgot password navigation
         tvForgotPassword.setOnClickListener(v -> {
-
             Intent intent = new Intent(
                     MainActivity.this,
                     ResetPasswordActivity.class
             );
-
             startActivity(intent);
         });
 
-        Log.e(TAG, "MainActivity initialization completed successfully");
+        Log.d(TAG, "MainActivity initialization completed");
     }
 
-    // Update signup text according to selected role
-    private void updateSignupText() {
-
-        if (selectedRole.equals("customer")) {
-
-            tvRegister.setVisibility(TextView.VISIBLE);
-
-            tvRegister.setText(
-                    "Don't have a Customer account? Customer Sign Up"
-            );
-
-        } else if (selectedRole.equals("worker")) {
-
-            tvRegister.setVisibility(TextView.VISIBLE);
-
-            tvRegister.setText(
-                    "Don't have a Worker account? Worker Sign Up"
-            );
-
-        } else {
-
-            // Admin cannot register publicly
-            tvRegister.setVisibility(TextView.GONE);
-        }
-    }
-
-    // Open appropriate signup screen
+    // Open the common signup screen
     private void openSignupScreen() {
-
-        Intent intent;
-
-        if (selectedRole.equals("customer")) {
-
-            intent = new Intent(
-                    MainActivity.this,
-                    activity_signup.class
-            );
-
-        } else if (selectedRole.equals("worker")) {
-
-            intent = new Intent(
-                    MainActivity.this,
-                    WorkerSignupActivity.class
-            );
-
-        } else {
-
-            // Admin signup is not publicly available
-            return;
-        }
+        Intent intent = new Intent(
+                MainActivity.this,
+                activity_signup.class
+        );
 
         startActivity(intent);
     }
@@ -192,14 +107,12 @@ public class MainActivity extends AppCompatActivity {
 
         // Validate email
         if (TextUtils.isEmpty(email)) {
-
             etEmail.setError("Please enter your email");
             etEmail.requestFocus();
             return;
         }
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-
             etEmail.setError("Please enter a valid email");
             etEmail.requestFocus();
             return;
@@ -207,7 +120,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Validate password
         if (TextUtils.isEmpty(password)) {
-
             etPassword.setError("Please enter your password");
             etPassword.requestFocus();
             return;
@@ -218,11 +130,7 @@ public class MainActivity extends AppCompatActivity {
         btnLogin.setEnabled(false);
         btnLogin.setText("Logging in...");
 
-        rgUserRole.setEnabled(false);
-
-        final String loginRole = selectedRole;
-
-        Log.d(TAG, "Starting Firebase login for role: " + loginRole);
+        Log.d(TAG, "Starting Firebase login");
 
         auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
@@ -234,13 +142,9 @@ public class MainActivity extends AppCompatActivity {
                         FirebaseUser user = auth.getCurrentUser();
 
                         if (user != null) {
-
-                            verifyUserRole(user, loginRole);
-
+                            verifyUserRole(user);
                         } else {
-
                             auth.signOut();
-
                             loginFailed(
                                     "Unable to verify user. Please try again."
                             );
@@ -248,7 +152,8 @@ public class MainActivity extends AppCompatActivity {
 
                     } else {
 
-                        Log.e(TAG, "Firebase login failed", task.getException());
+                        Log.e(TAG, "Firebase login failed",
+                                task.getException());
 
                         loginFailed(
                                 "Login failed. Check your email and password."
@@ -257,8 +162,8 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    // Verify user role from Firestore
-    private void verifyUserRole(FirebaseUser user, String loginRole) {
+    // Automatically detect account role from Firestore
+    private void verifyUserRole(FirebaseUser user) {
 
         String uid = user.getUid();
 
@@ -290,26 +195,27 @@ public class MainActivity extends AppCompatActivity {
                     actualRole = actualRole.trim()
                             .toLowerCase(Locale.ROOT);
 
-                    Log.d(TAG, "Firestore role: " + actualRole);
+                    Log.d(TAG, "Detected role: " + actualRole);
 
-                    // Verify selected role
-                    if (!actualRole.equals(loginRole)) {
+                    // Only supported roles
+                    if (!actualRole.equals("customer")
+                            && !actualRole.equals("worker")
+                            && !actualRole.equals("admin")) {
 
                         auth.signOut();
 
-                        loginFailed(
-                                "Selected role does not match your account."
-                        );
+                        loginFailed("Invalid account role.");
                         return;
                     }
 
-                    // Worker approval verification
+                    // Worker approval check
                     if (actualRole.equals("worker")) {
 
                         String approvalStatus =
                                 document.getString("approvalStatus");
 
-                        Log.d(TAG, "Worker approval status: " + approvalStatus);
+                        Log.d(TAG,
+                                "Worker approval status: " + approvalStatus);
 
                         if (!"approved".equalsIgnoreCase(approvalStatus)) {
 
@@ -322,8 +228,18 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
 
-                    // Admin verification
+                    // Admin UID check
                     if (actualRole.equals("admin")) {
+
+                        if (!uid.equals(ADMIN_UID)) {
+
+                            auth.signOut();
+
+                            loginFailed(
+                                    "Unauthorized administrator account."
+                            );
+                            return;
+                        }
 
                         Log.d(TAG, "Opening Admin Dashboard");
 
@@ -342,7 +258,8 @@ public class MainActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> {
 
-                    Log.e(TAG, "Firestore role verification failed", e);
+                    Log.e(TAG,
+                            "Firestore role verification failed", e);
 
                     auth.signOut();
 
@@ -405,9 +322,7 @@ public class MainActivity extends AppCompatActivity {
         loginInProgress = false;
 
         btnLogin.setEnabled(true);
-        btnLogin.setText("Login");
-
-        rgUserRole.setEnabled(true);
+        btnLogin.setText("LOGIN");
 
         Toast.makeText(
                 MainActivity.this,
