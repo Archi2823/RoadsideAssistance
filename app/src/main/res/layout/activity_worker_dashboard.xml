@@ -3,17 +3,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#F4F7FB"
+    android:background="#F3F6FB"
     android:padding="18dp">
 
-    <!-- Header -->
+    <!-- HEADER -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingTop="6dp"
-        android:paddingBottom="14dp">
+        android:paddingTop="8dp"
+        android:paddingBottom="18dp">
 
         <LinearLayout
             android:layout_width="0dp"
@@ -24,56 +24,68 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="WORKER DASHBOARD"
-                android:textColor="#64748B"
+                android:text="ROADSIDE ASSISTANCE"
+                android:textColor="#6B7D93"
                 android:textSize="11sp"
                 android:textStyle="bold"
-                android:letterSpacing="0.08" />
+                android:letterSpacing="0.12" />
 
             <TextView
                 android:id="@+id/tvWelcome"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="6dp"
                 android:text="Welcome, Worker"
                 android:textColor="#173B6C"
-                android:textSize="22sp"
+                android:textSize="23sp"
                 android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Manage your service requests"
+                android:textColor="#718096"
+                android:textSize="13sp" />
+
         </LinearLayout>
 
         <Button
             android:id="@+id/btnLogout"
             android:layout_width="wrap_content"
-            android:layout_height="42dp"
-            android:backgroundTint="#E8EEF7"
+            android:layout_height="44dp"
+            android:backgroundTint="#E4ECF7"
             android:text="Logout"
             android:textAllCaps="false"
-            android:textColor="#173B6C" />
+            android:textColor="#173B6C"
+            android:textSize="14sp" />
+
     </LinearLayout>
 
-    <!-- Dashboard subtitle -->
+    <!-- DASHBOARD OVERVIEW -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
-        android:text="Your work at a glance"
-        android:textColor="#64748B"
-        android:textSize="14sp" />
+        android:text="Work Overview"
+        android:textColor="#173B6C"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="12dp" />
 
-    <!-- Request counters -->
+    <!-- COUNTERS -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:weightSum="3">
 
-        <!-- Assigned -->
+        <!-- ASSIGNED -->
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="88dp"
-            android:layout_marginEnd="6dp"
+            android:layout_height="104dp"
             android:layout_weight="1"
-            android:background="#E8F1FF"
+            android:layout_marginEnd="6dp"
+            android:background="#E4EEFF"
             android:gravity="center"
             android:orientation="vertical"
             android:padding="8dp">
@@ -84,24 +96,27 @@
                 android:layout_height="wrap_content"
                 android:text="0"
                 android:textColor="#2563EB"
-                android:textSize="25sp"
+                android:textSize="29sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
                 android:text="Assigned"
                 android:textColor="#31547F"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
         </LinearLayout>
 
-        <!-- In Progress -->
+        <!-- IN PROGRESS -->
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="88dp"
-            android:layout_marginHorizontal="3dp"
+            android:layout_height="104dp"
             android:layout_weight="1"
-            android:background="#FFF3DF"
+            android:layout_marginHorizontal="3dp"
+            android:background="#FFF1DB"
             android:gravity="center"
             android:orientation="vertical"
             android:padding="8dp">
@@ -112,24 +127,27 @@
                 android:layout_height="wrap_content"
                 android:text="0"
                 android:textColor="#C47A16"
-                android:textSize="25sp"
+                android:textSize="29sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
                 android:text="In Progress"
                 android:textColor="#805719"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
         </LinearLayout>
 
-        <!-- Completed -->
+        <!-- COMPLETED -->
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="88dp"
-            android:layout_marginStart="6dp"
+            android:layout_height="104dp"
             android:layout_weight="1"
-            android:background="#E5F7ED"
+            android:layout_marginStart="6dp"
+            android:background="#E1F4E9"
             android:gravity="center"
             android:orientation="vertical"
             android:padding="8dp">
@@ -140,97 +158,154 @@
                 android:layout_height="wrap_content"
                 android:text="0"
                 android:textColor="#18834C"
-                android:textSize="25sp"
+                android:textSize="29sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
                 android:text="Completed"
                 android:textColor="#276749"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
         </LinearLayout>
+
     </LinearLayout>
 
-    <!-- Request lists -->
+    <!-- REQUEST CONTENT -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="18dp"
         android:layout_weight="1"
-        android:clipToPadding="false"
-        android:fillViewport="true">
+        android:layout_marginTop="22dp"
+        android:fillViewport="false"
+        android:clipToPadding="false">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingBottom="18dp">
+            android:paddingBottom="24dp">
 
-            <!-- Assigned requests -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="New assigned requests"
-                android:textColor="#173B6C"
-                android:textSize="17sp"
-                android:textStyle="bold" />
-
+            <!-- ASSIGNED REQUESTS -->
             <LinearLayout
-                android:id="@+id/assignedRequestsContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="vertical" />
+                android:orientation="vertical"
+                android:background="#FFFFFF"
+                android:padding="14dp">
 
-            <!-- In progress requests -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="Work in progress"
-                android:textColor="#173B6C"
-                android:textSize="17sp"
-                android:textStyle="bold" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="New Assigned Requests"
+                    android:textColor="#173B6C"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Requests waiting for you to start"
+                    android:textColor="#8492A6"
+                    android:textSize="12sp" />
+
+                <LinearLayout
+                    android:id="@+id/assignedRequestsContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="vertical" />
+
+            </LinearLayout>
+
+            <!-- IN PROGRESS REQUESTS -->
             <LinearLayout
-                android:id="@+id/progressRequestsContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="vertical" />
+                android:layout_marginTop="14dp"
+                android:orientation="vertical"
+                android:background="#FFFFFF"
+                android:padding="14dp">
 
-            <!-- Completed requests -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="Completed requests"
-                android:textColor="#173B6C"
-                android:textSize="17sp"
-                android:textStyle="bold" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Work In Progress"
+                    android:textColor="#173B6C"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Service requests currently being handled"
+                    android:textColor="#8492A6"
+                    android:textSize="12sp" />
+
+                <LinearLayout
+                    android:id="@+id/progressRequestsContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="vertical" />
+
+            </LinearLayout>
+
+            <!-- COMPLETED REQUESTS -->
             <LinearLayout
-                android:id="@+id/completedRequestsContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="vertical" />
+                android:layout_marginTop="14dp"
+                android:orientation="vertical"
+                android:background="#FFFFFF"
+                android:padding="14dp">
 
-            <!-- Empty state -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Completed Requests"
+                    android:textColor="#173B6C"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Your successfully completed services"
+                    android:textColor="#8492A6"
+                    android:textSize="12sp" />
+
+                <LinearLayout
+                    android:id="@+id/completedRequestsContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="vertical" />
+
+            </LinearLayout>
+
+            <!-- EMPTY STATE -->
             <TextView
                 android:id="@+id/tvEmpty"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="14dp"
+                android:background="#FFFFFF"
                 android:gravity="center"
-                android:padding="18dp"
+                android:padding="20dp"
                 android:text="No service requests assigned to you yet."
                 android:textColor="#7B8794"
                 android:textSize="14sp"
                 android:visibility="gone" />
 
         </LinearLayout>
+
     </ScrollView>
 
 </LinearLayout>

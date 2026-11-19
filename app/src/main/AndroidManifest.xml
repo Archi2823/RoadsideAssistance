@@ -16,9 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.RoadsideAssistance">
 
-        <!-- Google Maps API key -->
-       
-        <!-- Splash screen -->
+
         <activity
             android:name=".Splash_screen"
             android:exported="true">
@@ -28,17 +26,17 @@
             </intent-filter>
         </activity>
 
-        <!-- Signup -->
+
         <activity
             android:name=".activity_signup"
             android:exported="false" />
 
-        <!-- Home -->
+
         <activity
             android:name=".HomeActivity"
             android:exported="false" />
 
-        <!-- Password management -->
+
         <activity
             android:name=".ChangePasswordActivity"
             android:exported="false" />
@@ -47,12 +45,12 @@
             android:name=".ResetPasswordActivity"
             android:exported="false" />
 
-        <!-- Profile -->
+
         <activity
             android:name=".ProfileActivity"
             android:exported="false" />
 
-        <!-- Battery Help -->
+
         <activity
             android:name=".BatteryHelpActivity"
             android:exported="false" />
@@ -77,7 +75,7 @@
             android:name=".AdminDashboardActivity"
             android:exported="false" />
 
-        <!-- Towing Help -->
+
         <activity
             android:name=".TowingHelpActivity"
             android:exported="false" />
@@ -85,12 +83,16 @@
         <activity
             android:name=".MyBookingsActivity"
             android:exported="false" />
-        <!-- Google Maps and garage list -->
+
+
+        <activity
+            android:name=".ProviderRegistrationActivity"
+            android:exported="false" />
         <activity
             android:name=".GarageTowingMapActivity"
             android:exported="false" />
 
-        <!-- Requests and feedback -->
+
         <activity
             android:name=".MyRequestsActivity"
             android:exported="false" />
@@ -128,7 +130,7 @@
         <activity
             android:name=".MyFavouriteMechanicsActivity"
             android:exported="false" />
-        <!-- Login -->
+
         <activity
             android:name=".MainActivity"
             android:exported="false"
