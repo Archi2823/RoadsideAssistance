@@ -9,9 +9,9 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.Gravity;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,6 +44,7 @@ public class WorkerDashboardActivity extends AppCompatActivity {
 
     private Button btnLogout;
     private Button btnServiceCharges;
+    private ImageButton btnWorkerProfile;
 
     private ListenerRegistration requestsListener;
 
@@ -79,10 +80,18 @@ public class WorkerDashboardActivity extends AppCompatActivity {
 
         btnLogout = findViewById(R.id.btnLogout);
         btnServiceCharges = findViewById(R.id.btnServiceCharges);
+        btnWorkerProfile = findViewById(R.id.btnWorkerProfile);
 
         btnLogout.setOnClickListener(v -> logout());
 
-        // OPEN WORKER SERVICE CHARGES SCREEN
+        btnWorkerProfile.setOnClickListener(v -> {
+            Intent intent = new Intent(
+                    WorkerDashboardActivity.this,
+                    WorkerProfileActivity.class
+            );
+            startActivity(intent);
+        });
+
         btnServiceCharges.setOnClickListener(v -> {
             Intent intent = new Intent(
                     WorkerDashboardActivity.this,
@@ -93,10 +102,6 @@ public class WorkerDashboardActivity extends AppCompatActivity {
 
         verifyWorkerAndLoadRequests();
     }
-
-    // --------------------------------------------------
-    // VERIFY WORKER
-    // --------------------------------------------------
 
     private void verifyWorkerAndLoadRequests() {
 
@@ -176,10 +181,6 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                 );
     }
 
-    // --------------------------------------------------
-    // LOAD ASSIGNED REQUESTS
-    // --------------------------------------------------
-
     private void loadAssignedRequests(String uid) {
 
         if (requestsListener != null) {
@@ -208,11 +209,11 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                         tvProgressCount.setText("0");
                         tvCompletedCount.setText("0");
 
-                        tvEmpty.setVisibility(View.VISIBLE);
+                        tvEmpty.setVisibility(android.view.View.VISIBLE);
                         return;
                     }
 
-                    tvEmpty.setVisibility(View.GONE);
+                    tvEmpty.setVisibility(android.view.View.GONE);
 
                     List<DocumentSnapshot> assigned =
                             new ArrayList<>();
@@ -294,10 +295,6 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                 });
     }
 
-    // --------------------------------------------------
-    // SECTION EMPTY MESSAGE
-    // --------------------------------------------------
-
     private void addSectionEmpty(
             LinearLayout parent,
             boolean empty,
@@ -313,10 +310,6 @@ public class WorkerDashboardActivity extends AppCompatActivity {
 
         parent.addView(text);
     }
-
-    // --------------------------------------------------
-    // REQUEST CARD
-    // --------------------------------------------------
 
     private void addRequestCard(
             DocumentSnapshot doc,
@@ -340,12 +333,7 @@ public class WorkerDashboardActivity extends AppCompatActivity {
 
         LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.VERTICAL);
-        card.setPadding(
-                dp(16),
-                dp(15),
-                dp(16),
-                dp(16)
-        );
+        card.setPadding(dp(16), dp(15), dp(16), dp(16));
 
         card.setBackground(
                 roundedBackground(
@@ -366,7 +354,6 @@ public class WorkerDashboardActivity extends AppCompatActivity {
         card.setLayoutParams(cardParams);
         card.setElevation(dp(2));
 
-        // TOP ROW
         LinearLayout topRow = new LinearLayout(this);
         topRow.setGravity(Gravity.CENTER_VERTICAL);
         topRow.setOrientation(LinearLayout.HORIZONTAL);
@@ -386,18 +373,11 @@ public class WorkerDashboardActivity extends AppCompatActivity {
 
         topRow.addView(title, titleParams);
 
-        // STATUS BADGE
         TextView statusBadge = new TextView(this);
         statusBadge.setText(status.toUpperCase());
         statusBadge.setTextSize(10);
         statusBadge.setTypeface(null, Typeface.BOLD);
-        statusBadge.setPadding(
-                dp(10),
-                dp(6),
-                dp(10),
-                dp(6)
-        );
-
+        statusBadge.setPadding(dp(10), dp(6), dp(10), dp(6));
         statusBadge.setTextColor(statusColor(status));
 
         statusBadge.setBackground(
@@ -412,20 +392,12 @@ public class WorkerDashboardActivity extends AppCompatActivity {
         topRow.addView(statusBadge);
         card.addView(topRow);
 
-        // REQUEST ID
         TextView requestIdText =
                 smallText("Request #" + shortId(requestId));
 
-        requestIdText.setPadding(
-                0,
-                dp(5),
-                0,
-                dp(10)
-        );
-
+        requestIdText.setPadding(0, dp(5), 0, dp(10));
         card.addView(requestIdText);
 
-        // REQUEST INFORMATION
         addInfoRow(card, "Vehicle", vehicleType);
         addInfoRow(card, "Category", category);
         addInfoRow(card, "Issue", issue);
@@ -439,7 +411,6 @@ public class WorkerDashboardActivity extends AppCompatActivity {
             addInfoRow(card, "Details", description);
         }
 
-        // ASSIGNED -> START WORK
         if ("assigned".equalsIgnoreCase(status)) {
 
             Button startButton = actionButton(
@@ -459,24 +430,14 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                 );
             });
 
-            // IN PROGRESS -> COMPLETE WORK
         } else if ("in progress".equalsIgnoreCase(status)) {
 
             TextView progressInfo = smallText(
                     "You are currently working on this request."
             );
 
-            progressInfo.setTextColor(
-                    Color.rgb(177, 111, 16)
-            );
-
-            progressInfo.setPadding(
-                    0,
-                    dp(10),
-                    0,
-                    dp(8)
-            );
-
+            progressInfo.setTextColor(Color.rgb(177, 111, 16));
+            progressInfo.setPadding(0, dp(10), 0, dp(8));
             card.addView(progressInfo);
 
             Button completeButton = actionButton(
@@ -490,25 +451,15 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                     showCompletionDialog(requestId)
             );
 
-            // RESOLVED
         } else if ("resolved".equalsIgnoreCase(status)) {
 
             TextView done = smallText(
                     "✓ Work completed successfully"
             );
 
-            done.setTextColor(
-                    Color.rgb(24, 131, 76)
-            );
-
+            done.setTextColor(Color.rgb(24, 131, 76));
             done.setTypeface(null, Typeface.BOLD);
-
-            done.setPadding(
-                    0,
-                    dp(10),
-                    0,
-                    dp(4)
-            );
+            done.setPadding(0, dp(10), 0, dp(4));
 
             card.addView(done);
 
@@ -527,10 +478,6 @@ public class WorkerDashboardActivity extends AppCompatActivity {
 
         targetContainer.addView(card);
     }
-
-    // --------------------------------------------------
-    // REQUEST INFORMATION ROW
-    // --------------------------------------------------
 
     private void addInfoRow(
             LinearLayout parent,
@@ -573,10 +520,6 @@ public class WorkerDashboardActivity extends AppCompatActivity {
         parent.addView(row);
     }
 
-    // --------------------------------------------------
-    // START WORK
-    // --------------------------------------------------
-
     private void updateStartWork(
             String requestId,
             Button button) {
@@ -593,9 +536,7 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                 .document(requestId)
                 .update(updates)
                 .addOnSuccessListener(unused ->
-                        showToast(
-                                "Work started successfully!"
-                        )
+                        showToast("Work started successfully!")
                 )
                 .addOnFailureListener(e -> {
                     button.setEnabled(true);
@@ -608,20 +549,11 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                 });
     }
 
-    // --------------------------------------------------
-    // COMPLETE WORK DIALOG
-    // --------------------------------------------------
-
     private void showCompletionDialog(String requestId) {
 
         LinearLayout content = new LinearLayout(this);
         content.setOrientation(LinearLayout.VERTICAL);
-        content.setPadding(
-                dp(20),
-                dp(8),
-                dp(20),
-                0
-        );
+        content.setPadding(dp(20), dp(8), dp(20), 0);
 
         completionRemarkInput = new EditText(this);
 
@@ -635,10 +567,12 @@ public class WorkerDashboardActivity extends AppCompatActivity {
 
         completionRemarkInput.setMinLines(3);
         completionRemarkInput.setMaxLines(5);
+        completionRemarkInput.setSingleLine(false);
 
         completionRemarkInput.setInputType(
                 InputType.TYPE_CLASS_TEXT |
-                        InputType.TYPE_TEXT_FLAG_MULTI_LINE
+                        InputType.TYPE_TEXT_FLAG_MULTI_LINE |
+                        InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
         );
 
         content.addView(completionRemarkInput);
@@ -700,10 +634,6 @@ public class WorkerDashboardActivity extends AppCompatActivity {
 
         completionDialog.show();
     }
-
-    // --------------------------------------------------
-    // RESOLVE REQUEST + UPDATE WORKER STATS
-    // --------------------------------------------------
 
     private void resolveRequestAndUpdateCounter(
             String requestId,
@@ -796,15 +726,8 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                     FieldValue.serverTimestamp()
             );
 
-            transaction.update(
-                    requestRef,
-                    requestUpdates
-            );
-
-            transaction.update(
-                    statsRef,
-                    statsUpdates
-            );
+            transaction.update(requestRef, requestUpdates);
+            transaction.update(statsRef, statsUpdates);
 
             return null;
 
@@ -832,18 +755,10 @@ public class WorkerDashboardActivity extends AppCompatActivity {
         });
     }
 
-    // --------------------------------------------------
-    // CLEAR COMPLETION FORM
-    // --------------------------------------------------
-
     private void clearCompletionForm() {
         completionRemarkInput = null;
         completionDialog = null;
     }
-
-    // --------------------------------------------------
-    // ACTION BUTTON
-    // --------------------------------------------------
 
     private Button actionButton(
             String text,
@@ -873,10 +788,6 @@ public class WorkerDashboardActivity extends AppCompatActivity {
         return button;
     }
 
-    // --------------------------------------------------
-    // SMALL TEXT
-    // --------------------------------------------------
-
     private TextView smallText(String text) {
 
         TextView view = new TextView(this);
@@ -887,10 +798,6 @@ public class WorkerDashboardActivity extends AppCompatActivity {
 
         return view;
     }
-
-    // --------------------------------------------------
-    // ROUNDED BACKGROUND
-    // --------------------------------------------------
 
     private GradientDrawable roundedBackground(
             int color,
@@ -905,18 +812,11 @@ public class WorkerDashboardActivity extends AppCompatActivity {
         drawable.setCornerRadius(radius);
 
         if (strokeWidth > 0) {
-            drawable.setStroke(
-                    strokeWidth,
-                    strokeColor
-            );
+            drawable.setStroke(strokeWidth, strokeColor);
         }
 
         return drawable;
     }
-
-    // --------------------------------------------------
-    // STATUS COLOR
-    // --------------------------------------------------
 
     private int statusColor(String status) {
 
@@ -932,10 +832,6 @@ public class WorkerDashboardActivity extends AppCompatActivity {
         return Color.DKGRAY;
     }
 
-    // --------------------------------------------------
-    // STATUS BACKGROUND
-    // --------------------------------------------------
-
     private int statusBackground(String status) {
 
         if ("assigned".equalsIgnoreCase(status))
@@ -950,10 +846,6 @@ public class WorkerDashboardActivity extends AppCompatActivity {
         return Color.LTGRAY;
     }
 
-    // --------------------------------------------------
-    // GET DOCUMENT VALUE
-    // --------------------------------------------------
-
     private String value(
             DocumentSnapshot doc,
             String field) {
@@ -966,17 +858,9 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                 : value;
     }
 
-    // --------------------------------------------------
-    // SAFE STRING
-    // --------------------------------------------------
-
     private String safe(String value) {
         return value == null ? "" : value.trim();
     }
-
-    // --------------------------------------------------
-    // SHORT REQUEST ID
-    // --------------------------------------------------
 
     private String shortId(String id) {
 
@@ -986,10 +870,6 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                 ? id.substring(0, 8).toUpperCase()
                 : id.toUpperCase();
     }
-
-    // --------------------------------------------------
-    // DP CONVERSION
-    // --------------------------------------------------
 
     private int dp(int value) {
 
@@ -1002,10 +882,6 @@ public class WorkerDashboardActivity extends AppCompatActivity {
         );
     }
 
-    // --------------------------------------------------
-    // TOAST
-    // --------------------------------------------------
-
     private void showToast(String message) {
 
         Toast.makeText(
@@ -1014,10 +890,6 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                 Toast.LENGTH_LONG
         ).show();
     }
-
-    // --------------------------------------------------
-    // LOGOUT
-    // --------------------------------------------------
 
     private void logout() {
 
@@ -1029,10 +901,6 @@ public class WorkerDashboardActivity extends AppCompatActivity {
         auth.signOut();
         goToLogin();
     }
-
-    // --------------------------------------------------
-    // GO TO LOGIN
-    // --------------------------------------------------
 
     private void goToLogin() {
 
@@ -1049,10 +917,6 @@ public class WorkerDashboardActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
-
-    // --------------------------------------------------
-    // ACTIVITY DESTROY
-    // --------------------------------------------------
 
     @Override
     protected void onDestroy() {

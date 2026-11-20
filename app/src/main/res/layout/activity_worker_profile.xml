@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F3F6FB"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <!-- HEADER -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="8dp"
+            android:paddingBottom="18dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ROADSIDE ASSISTANCE"
+                android:textColor="#718096"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.12" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Service Provider Profile"
+                android:textColor="#173B6C"
+                android:textSize="25sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="View and manage your professional information"
+                android:textColor="#718096"
+                android:textSize="13sp" />
+
+        </LinearLayout>
+
+        <!-- PROFILE STATUS CARD -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#E4EEFF"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ACCOUNT STATUS"
+                android:textColor="#31547F"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvApprovalStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Loading status..."
+                android:textColor="#2563EB"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvWorkerId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Worker ID"
+                android:textColor="#526A88"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+        <!-- PERSONAL INFORMATION -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:layout_marginBottom="10dp"
+            android:text="Personal Information"
+            android:textColor="#173B6C"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <!-- NAME -->
+        <EditText
+            android:id="@+id/etProfileName"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/signup_input_bg"
+            android:hint="Full Name"
+            android:paddingHorizontal="15dp"
+            android:singleLine="true"
+            android:textColor="#24364B"
+            android:textColorHint="#8A99AA"
+            android:textSize="14sp" />
+
+        <!-- PHONE -->
+        <EditText
+            android:id="@+id/etProfilePhone"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/signup_input_bg"
+            android:hint="Mobile Number"
+            android:inputType="phone"
+            android:maxLength="10"
+            android:paddingHorizontal="15dp"
+            android:singleLine="true"
+            android:textColor="#24364B"
+            android:textColorHint="#8A99AA"
+            android:textSize="14sp" />
+
+        <!-- EMAIL READ ONLY -->
+        <EditText
+            android:id="@+id/etProfileEmail"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/signup_input_bg"
+            android:hint="Email"
+            android:inputType="textEmailAddress"
+            android:paddingHorizontal="15dp"
+            android:singleLine="true"
+            android:textColor="#718096"
+            android:textColorHint="#8A99AA"
+            android:textSize="14sp"
+            android:focusable="false"
+            android:clickable="false"
+            android:cursorVisible="false" />
+
+        <!-- BUSINESS INFORMATION -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="10dp"
+            android:text="Business Information"
+            android:textColor="#173B6C"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <!-- GARAGE / BUSINESS NAME -->
+        <EditText
+            android:id="@+id/etProfileGarageName"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/signup_input_bg"
+            android:hint="Garage / Business Name"
+            android:paddingHorizontal="15dp"
+            android:singleLine="true"
+            android:textColor="#24364B"
+            android:textColorHint="#8A99AA"
+            android:textSize="14sp" />
+
+        <!-- SERVICE CATEGORY -->
+        <EditText
+            android:id="@+id/etProfileCategory"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/signup_input_bg"
+            android:hint="Service Category"
+            android:paddingHorizontal="15dp"
+            android:singleLine="true"
+            android:textColor="#24364B"
+            android:textColorHint="#8A99AA"
+            android:textSize="14sp" />
+
+        <!-- SPECIALIZATION -->
+        <EditText
+            android:id="@+id/etProfileSpecialization"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/signup_input_bg"
+            android:hint="Specialization"
+            android:paddingHorizontal="15dp"
+            android:singleLine="true"
+            android:textColor="#24364B"
+            android:textColorHint="#8A99AA"
+            android:textSize="14sp" />
+
+        <!-- EXPERIENCE -->
+        <EditText
+            android:id="@+id/etProfileExperience"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/signup_input_bg"
+            android:hint="Experience (Years)"
+            android:inputType="number"
+            android:paddingHorizontal="15dp"
+            android:singleLine="true"
+            android:textColor="#24364B"
+            android:textColorHint="#8A99AA"
+            android:textSize="14sp" />
+
+        <!-- SERVICES -->
+        <EditText
+            android:id="@+id/etProfileServices"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="80dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/signup_input_bg"
+            android:gravity="top"
+            android:hint="Services Offered (comma separated)"
+            android:inputType="textCapSentences|textMultiLine"
+            android:padding="15dp"
+            android:textColor="#24364B"
+            android:textColorHint="#8A99AA"
+            android:textSize="14sp" />
+
+        <!-- LOCATION INFORMATION -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="10dp"
+            android:text="Location &amp; Availability"
+            android:textColor="#173B6C"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <!-- CITY -->
+        <EditText
+            android:id="@+id/etProfileCity"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/signup_input_bg"
+            android:hint="City"
+            android:paddingHorizontal="15dp"
+            android:singleLine="true"
+            android:textColor="#24364B"
+            android:textColorHint="#8A99AA"
+            android:textSize="14sp" />
+
+        <!-- PINCODE -->
+        <EditText
+            android:id="@+id/etProfilePincode"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/signup_input_bg"
+            android:hint="Pincode"
+            android:inputType="number"
+            android:maxLength="6"
+            android:paddingHorizontal="15dp"
+            android:singleLine="true"
+            android:textColor="#24364B"
+            android:textColorHint="#8A99AA"
+            android:textSize="14sp" />
+
+        <!-- SERVICE AREA -->
+        <EditText
+            android:id="@+id/etProfileServiceArea"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="70dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/signup_input_bg"
+            android:gravity="top"
+            android:hint="Service Area / Address"
+            android:inputType="textCapSentences|textMultiLine"
+            android:padding="15dp"
+            android:textColor="#24364B"
+            android:textColorHint="#8A99AA"
+            android:textSize="14sp" />
+
+        <!-- AVAILABLE DAYS -->
+        <EditText
+            android:id="@+id/etProfileAvailableDays"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="70dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/signup_input_bg"
+            android:gravity="top"
+            android:hint="Available Days (comma separated)"
+            android:inputType="textCapSentences|textMultiLine"
+            android:padding="15dp"
+            android:textColor="#24364B"
+            android:textColorHint="#8A99AA"
+            android:textSize="14sp" />
+
+        <!-- WORKING HOURS -->
+        <EditText
+            android:id="@+id/etProfileWorkingHours"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/signup_input_bg"
+            android:hint="Working Hours (e.g. 9 AM - 8 PM)"
+            android:paddingHorizontal="15dp"
+            android:singleLine="true"
+            android:textColor="#24364B"
+            android:textColorHint="#8A99AA"
+            android:textSize="14sp" />
+
+        <!-- SAVE BUTTON -->
+        <Button
+            android:id="@+id/btnSaveProfile"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginTop="12dp"
+            android:backgroundTint="#2563EB"
+            android:text="Save Profile Changes"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <!-- BACK BUTTON -->
+        <Button
+            android:id="@+id/btnBackProfile"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="20dp"
+            android:backgroundTint="#E4ECF7"
+            android:text="Back to Dashboard"
+            android:textAllCaps="false"
+            android:textColor="#173B6C"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+</ScrollView>
